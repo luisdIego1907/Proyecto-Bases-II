@@ -2608,11 +2608,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\Facade.csproj",
+      "projectUniqueName": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\Facade.csproj",
       "projectName": "Facade",
-      "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\Facade.csproj",
+      "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\Facade.csproj",
       "packagesPath": "C:\\Users\\luisd\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\obj\\",
+      "outputPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Facade\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2634,14 +2634,14 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj"
             },
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj"
             },
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }

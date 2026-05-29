@@ -2588,11 +2588,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj",
+      "projectUniqueName": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj",
       "projectName": "DomainService",
-      "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj",
+      "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\DomainService.csproj",
       "packagesPath": "C:\\Users\\luisd\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\obj\\",
+      "outputPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\DomainService\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2614,17 +2614,17 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Domain\\Domain.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Domain\\Domain.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Domain\\Domain.csproj"
             },
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Dto\\Dto.csproj"
             },
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Exceptions\\Exceptions.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Exceptions\\Exceptions.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Exceptions\\Exceptions.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Exceptions\\Exceptions.csproj"
             },
-            "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "c:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj"
+            "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\luisd\\Desktop\\Proyecto-Bases-II\\Backend\\src\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
