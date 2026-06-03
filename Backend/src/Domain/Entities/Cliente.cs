@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Domain.Entities;
+
 
 [Table("CLIENTE")]
 [Index(nameof(ClienteResourceId), IsUnique = true)]

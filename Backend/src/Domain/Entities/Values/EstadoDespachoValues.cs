@@ -1,4 +1,4 @@
-namespace Infrastructure.Repositories;
+namespace Domain.Entities.Values;
 
 public class EstadoDespachoValues
 {

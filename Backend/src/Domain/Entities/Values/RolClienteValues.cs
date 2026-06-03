@@ -1,6 +1,6 @@
-namespace Infrastructure.Repositories;
+namespace Domain.Entities.Values;
 
-public static class RolClienteValues
+public class RolClienteValues
 {
     public const string Origen = "ORIGEN";
     public const string Destino = "DESTINO";

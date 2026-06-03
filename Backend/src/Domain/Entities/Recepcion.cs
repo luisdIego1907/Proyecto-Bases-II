@@ -1,9 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-namespace Infrastructure.Repositories;
+namespace Domain.Entities;
 
 [Table("RECEPCION")]
 [Index(nameof(RecepcionResourceId), IsUnique = true)]

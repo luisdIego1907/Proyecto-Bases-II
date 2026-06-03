@@ -1,23 +1,21 @@
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Domain.Entities;
 
-[Table("DESPACHO_CARRITO")]
-[Index(nameof(CarritoResourceId), IsUnique = true)]
+[Table("DESPACHO_DETALLE")]
+[Index(nameof(DetalleResourceId), IsUnique = true)]
 [Index(nameof(DespachoId), nameof(ProductoId), IsUnique = true)]
-public class DespachoCarrito
+public class DespachoDetalle
 {
     [Key]
-    [Column("CarritoId")]
+    [Column("DetalleId")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int CarritoId { get; set; }
+    public int DetalleId { get; set; }
 
     [Required]
-    [Column("CarritoResourceId", TypeName = "char(36)")]
-    public Guid CarritoResourceId { get; set; } = Guid.NewGuid();
+    [Column("DetalleResourceId", TypeName = "char(36)")]
+    public Guid DetalleResourceId { get; set; } = Guid.NewGuid();
 
     [Required]
     [Column("DespachoId")]
@@ -33,6 +31,7 @@ public class DespachoCarrito
 
     [Required]
     [Range(1, int.MaxValue)]
-    [Column("CantidadSolicitada")]
-    public int CantidadSolicitada { get; set; }
+    [Column("CantidadDespachada")]
+    public int CantidadDespachada { get; set; }
 }
+

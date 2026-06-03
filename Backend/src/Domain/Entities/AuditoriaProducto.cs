@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+
+namespace Domain.Entities;
+
 
 [Table("AUDITORIA_PRODUCTO")]
 [Index(nameof(AuditoriaResourceId), IsUnique = true)]

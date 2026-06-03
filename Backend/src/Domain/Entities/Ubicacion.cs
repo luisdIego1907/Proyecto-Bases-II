@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Domain.Entities;
 
 [Table("UBICACION")]
 [Index(nameof(UbicacionResourceId), IsUnique = true)]
