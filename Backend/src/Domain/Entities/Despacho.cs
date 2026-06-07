@@ -41,7 +41,7 @@ public class Despacho
 
     public Usuario Usuario { get; set; } = null!;
 
-    public ICollection<DespachoCarrito> Carrito { get; set; } = new List<DespachoCarrito>();
+    public ICollection<DespachoCarrito> DespachoCarritos { get; set; } = new List<DespachoCarrito>();
 
-    public ICollection<DespachoDetalle> Detalles { get; set; } = new List<DespachoDetalle>();
+    public ICollection<DespachoDetalle> DespachoDetalles { get; set; } = new List<DespachoDetalle>();
 }
