@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Domain.Entities;
 
 [Table("DESPACHO_CARRITO")]
-[Index(nameof(CarritoResourceId), IsUnique = true)]
-[Index(nameof(DespachoId), nameof(ProductoId), IsUnique = true)]
+[Index(nameof(CarritoResourceId), IsUnique = true, Name = "UQ_DespachoCarrito_CarritoResourceId")]
+[Index(nameof(DespachoId), nameof(ProductoId), IsUnique = true, Name = "UQ_DespachoCarrito_Despacho_Producto")]
 public class DespachoCarrito
 {
     [Key]
@@ -20,18 +20,20 @@ public class DespachoCarrito
 
     [Required]
     [Column("DespachoId")]
+    [ForeignKey(nameof(Despacho))]
     public int DespachoId { get; set; }
-
-    public Despacho Despacho { get; set; } = null!;
 
     [Required]
     [Column("ProductoId")]
+    [ForeignKey(nameof(Producto))]
     public int ProductoId { get; set; }
-
-    public Producto Producto { get; set; } = null!;
 
     [Required]
     [Range(1, int.MaxValue)]
     [Column("CantidadSolicitada")]
     public int CantidadSolicitada { get; set; }
+
+    public Despacho Despacho { get; set; } = null!;
+
+    public Producto Producto { get; set; } = null!;
 }

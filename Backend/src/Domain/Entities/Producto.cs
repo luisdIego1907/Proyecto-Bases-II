@@ -5,11 +5,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Domain.Entities;
 
 [Table("PRODUCTO")]
-[Index(nameof(ProductoResourceId), IsUnique = true)]
-[Index(nameof(Codigo), IsUnique = true)]
+[Index(nameof(ProductoResourceId), IsUnique = true, Name = "UQ_Producto_ProductoResourceId")]
+[Index(nameof(Codigo), IsUnique = true, Name = "UQ_Producto_Codigo")]
+[Index(nameof(Activo), nameof(Nombre), Name = "ix_Producto_Activo_Nombre")]
+[Index(nameof(Activo), nameof(CantidadInventario), Name = "ix_Producto_Activo_CantidadInventario")]
 public class Producto
 {
-    
     [Key]
     [Column("ProductoId")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,23 +21,18 @@ public class Producto
     public Guid ProductoResourceId { get; set; } = Guid.NewGuid();
 
     [Required]
-    [MaxLength(50)]
+    [StringLength(50)]
     [Column("Codigo")]
     public string Codigo { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(150)]
+    [StringLength(100)]
     [Column("Nombre")]
     public string Nombre { get; set; } = string.Empty;
 
-    [MaxLength(500)]
+    [StringLength(255)]
     [Column("Detalle")]
     public string? Detalle { get; set; }
-
-    [Required]
-    [Range(0, int.MaxValue)]
-    [Column("CantidadActual")]
-    public int CantidadActual { get; set; } = 0;
 
     [Required]
     [Range(0, int.MaxValue)]
@@ -44,20 +40,26 @@ public class Producto
     public int StockCritico { get; set; }
 
     [Required]
+    [Range(0, int.MaxValue)]
+    [Column("CantidadInventario")]
+    public int CantidadInventario { get; set; } = 0;
+
+    [Required]
     [Column("UbicacionId")]
+    [ForeignKey(nameof(Ubicacion))]
     public int UbicacionId { get; set; }
+
+    [Required]
+    [Column("Activo")]
+    public bool Activo { get; set; } = true;
 
     public Ubicacion Ubicacion { get; set; } = null!;
 
-    [Required]
-    [Column("Activo", TypeName = "tinyint(1)")]
-    public bool Activo { get; set; } = true;
+    public ICollection<Recepcion> Recepciones { get; set; } = new List<Recepcion>();
 
-    public List<Recepcion> Recepciones { get; set; } = new();
+    public ICollection<DespachoCarrito> DespachoCarritos { get; set; } = new List<DespachoCarrito>();
 
-    public List<DespachoCarrito> DespachoCarritos { get; set; } = new();
+    public ICollection<DespachoDetalle> DespachoDetalles { get; set; } = new List<DespachoDetalle>();
 
-    public List<DespachoDetalle> DespachoDetalles { get; set; } = new();
-
-    public List<AuditoriaProducto> AuditoriasProducto { get; set; } = new();
+    public ICollection<AuditoriaProducto> AuditoriasProducto { get; set; } = new List<AuditoriaProducto>();
 }

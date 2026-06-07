@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Domain.Entities;
 
 [Table("UBICACION")]
-[Index(nameof(UbicacionResourceId), IsUnique = true)]
-[Index(nameof(Bodega), nameof(Pasillo), nameof(Estante), IsUnique = true)]
+[Index(nameof(UbicacionResourceId), IsUnique = true, Name = "UQ_Ubicacion_UbicacionResourceId")]
+[Index(nameof(EstanteId), IsUnique = true, Name = "UQ_Ubicacion_Estante")]
 public class Ubicacion
 {
     [Key]
@@ -18,19 +18,11 @@ public class Ubicacion
     public Guid UbicacionResourceId { get; set; } = Guid.NewGuid();
 
     [Required]
-    [MaxLength(50)]
-    [Column("Bodega")]
-    public string Bodega { get; set; } = string.Empty;
+    [Column("EstanteId")]
+    [ForeignKey(nameof(Estante))]
+    public int EstanteId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    [Column("Pasillo")]
-    public string Pasillo { get; set; } = string.Empty;
+    public Estante Estante { get; set; } = null!;
 
-    [Required]
-    [MaxLength(50)]
-    [Column("Estante")]
-    public string Estante { get; set; } = string.Empty;
-
-    public List<Producto> Productos { get; set; } = new();
+    public ICollection<Producto> Productos { get; set; } = new List<Producto>();
 }

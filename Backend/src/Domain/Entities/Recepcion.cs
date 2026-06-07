@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain.Entities;
 
 [Table("RECEPCION")]
-[Index(nameof(RecepcionResourceId), IsUnique = true)]
+[Index(nameof(RecepcionResourceId), IsUnique = true, Name = "UQ_Recepcion_RecepcionResourceId")]
+[Index(nameof(ProductoId), nameof(FechaRecepcion), Name = "ix_Recepcion_Producto_FechaRecepcion")]
 public class Recepcion
 {
-    [Key]
+     [Key]
     [Column("RecepcionId")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int RecepcionId { get; set; }
@@ -18,24 +19,21 @@ public class Recepcion
 
     [Required]
     [Column("ClienteId")]
+    [ForeignKey(nameof(Cliente))]
     public int ClienteId { get; set; }
-
-    public Cliente Cliente { get; set; } = null!;
 
     [Required]
     [Column("ProductoId")]
+    [ForeignKey(nameof(Producto))]
     public int ProductoId { get; set; }
-
-    public Producto Producto { get; set; } = null!;
 
     [Required]
     [Column("UsuarioId")]
+    [ForeignKey(nameof(Usuario))]
     public int UsuarioId { get; set; }
 
-    public Usuario Usuario { get; set; } = null!;
-
     [Required]
-    [MaxLength(100)]
+    [StringLength(100)]
     [Column("NumeroLote")]
     public string NumeroLote { get; set; } = string.Empty;
 
@@ -47,4 +45,10 @@ public class Recepcion
     [Required]
     [Column("FechaRecepcion")]
     public DateTime FechaRecepcion { get; set; } = DateTime.Now;
+
+    public Cliente Cliente { get; set; } = null!;
+
+    public Producto Producto { get; set; } = null!;
+
+    public Usuario Usuario { get; set; } = null!;
 }

@@ -1,12 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Entities.Values;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
 
 [Table("AUDITORIA_PRODUCTO")]
-[Index(nameof(AuditoriaResourceId), IsUnique = true)]
+[Index(nameof(AuditoriaResourceId), IsUnique = true, Name = "UQ_AuditoriaProducto_AuditoriaResourceId")]
+[Index(nameof(ProductoId), nameof(FechaCambio), Name = "ix_AuditoriaProducto_Producto_FechaCambio")]
+[Index(nameof(UsuarioId), nameof(FechaCambio), Name = "ix_AuditoriaProducto_Usuario_FechaCambio")]
 public class AuditoriaProducto
 {
     [Key]
@@ -20,30 +23,33 @@ public class AuditoriaProducto
 
     [Required]
     [Column("ProductoId")]
+    [ForeignKey(nameof(Producto))]
     public int ProductoId { get; set; }
-
-    public Producto Producto { get; set; } = null!;
 
     [Required]
     [Column("UsuarioId")]
+    [ForeignKey(nameof(Usuario))]
     public int UsuarioId { get; set; }
-
-    public Usuario Usuario { get; set; } = null!;
 
     [Required]
     [Column("FechaCambio")]
     public DateTime FechaCambio { get; set; } = DateTime.Now;
 
     [Required]
+    [Range(0, int.MaxValue)]
     [Column("CantidadAnterior")]
     public int CantidadAnterior { get; set; }
 
     [Required]
+    [Range(0, int.MaxValue)]
     [Column("CantidadNueva")]
     public int CantidadNueva { get; set; }
 
     [Required]
-    [MaxLength(20)]
-    [Column("TipoMovimiento")]
-    public string TipoMovimiento { get; set; } = string.Empty;
+    [Column("TipoMovimiento", TypeName = "enum('INCREMENTO','REDUCCION')")]
+    public TipoMovimientoValues TipoMovimiento { get; set; }
+
+    public Producto Producto { get; set; } = null!;
+
+    public Usuario Usuario { get; set; } = null!;
 }

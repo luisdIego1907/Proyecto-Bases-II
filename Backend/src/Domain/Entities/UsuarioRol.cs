@@ -5,18 +5,22 @@ namespace Domain.Entities;
 
 [Table("USUARIO_ROL")]
 [PrimaryKey(nameof(UsuarioId) , nameof(RolUsuarioId))]
-[Index(nameof(UsuarioRolResourceid) , IsUnique = true)]
+[Index(nameof(UsuarioRolResourceId) , IsUnique = true, Name = "UQ_UsuarioRol_UsuarioRolResourceId")]
 public class UsuarioRol
 {
-    public int UsuarioId {get;set;}
+   [Column("UsuarioId")]
+    [ForeignKey(nameof(Usuario))]
+    public int UsuarioId { get; set; }
 
-    public int RolUsuarioId {get;set;}
+    [Column("RolUsuarioId")]
+    [ForeignKey(nameof(RolUsuario))]
+    public int RolUsuarioId { get; set; }
 
     [Required]
-    [Column("UsuarioRolResourceId" , TypeName = "char(36)")]
-    public Guid UsuarioRolResourceid {get;set;} = Guid.NewGuid();
+    [Column("UsuarioRolResourceId", TypeName = "char(36)")]
+    public Guid UsuarioRolResourceId { get; set; } = Guid.NewGuid();
 
-    public Usuario Usuario {get;set;} = null!;
+    public Usuario Usuario { get; set; } = null!;
 
-    public RolUsuario RolUsuario {get;set;} = null!;
+    public RolUsuario RolUsuario { get; set; } = null!;
 }

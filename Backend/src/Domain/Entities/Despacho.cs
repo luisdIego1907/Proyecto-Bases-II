@@ -1,14 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Entities.Values;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
 [Table("DESPACHO")]
-[Index(nameof(DespachoResourceId), IsUnique = true)]
+[Index(nameof(DespachoResourceId), IsUnique = true, Name = "UQ_Despacho_DespachoResourceId")]
+[Index(nameof(ClienteId), nameof(FechaDespacho), Name = "ix_Despacho_Cliente_FechaDespacho")]
 public class Despacho
 {
-    [Key]
+      [Key]
     [Column("DespachoId")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int DespachoId { get; set; }
@@ -19,26 +21,27 @@ public class Despacho
 
     [Required]
     [Column("ClienteId")]
+    [ForeignKey(nameof(Cliente))]
     public int ClienteId { get; set; }
-
-    public Cliente Cliente { get; set; } = null!;
 
     [Required]
     [Column("UsuarioId")]
+    [ForeignKey(nameof(Usuario))]
     public int UsuarioId { get; set; }
-
-    public Usuario Usuario { get; set; } = null!;
 
     [Required]
     [Column("FechaDespacho")]
     public DateTime FechaDespacho { get; set; } = DateTime.Now;
 
     [Required]
-    [MaxLength(20)]
-    [Column("Estado")]
-    public string Estado { get; set; } = "PENDIENTE";
+    [Column("Estado", TypeName = "enum('PENDIENTE','PROCESADO','CANCELADO')")]
+    public EstadoDespachoValues Estado { get; set; } = EstadoDespachoValues.PENDIENTE;
 
-    public List<DespachoCarrito> DespachoCarritos { get; set; } = new();
+    public Cliente Cliente { get; set; } = null!;
 
-    public List<DespachoDetalle> DespachoDetalles { get; set; } = new();
+    public Usuario Usuario { get; set; } = null!;
+
+    public ICollection<DespachoCarrito> Carrito { get; set; } = new List<DespachoCarrito>();
+
+    public ICollection<DespachoDetalle> Detalles { get; set; } = new List<DespachoDetalle>();
 }

@@ -1,47 +1,51 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Entities.Values;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
 
 [Table("CLIENTE")]
-[Index(nameof(ClienteResourceId), IsUnique = true)]
-[Index(nameof(Nombre), IsUnique = true)]
+[Index(nameof(ClienteResourceId), IsUnique = true, Name = "UQ_Cliente_ClienteResourceId")]
+[Index(nameof(RolCliente), nameof(Activo), nameof(Nombre), Name = "ix_Cliente_RolCliente_Activo_Nombre")]
 public class Cliente
 {
     [Key]
+    [Column("ClienteId")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int ClienteId {get; set;}
+    public int ClienteId { get; set; }
 
     [Required]
-    [Column("ClienteResourceId" , TypeName = "char(36)")]
-    public Guid ClienteResourceId {get;set;} = Guid.NewGuid();
+    [Column("ClienteResourceId", TypeName = "char(36)")]
+    public Guid ClienteResourceId { get; set; } = Guid.NewGuid();
 
     [Required]
-    [MaxLength(150)]
-    public string Nombre {get;set;} = string.Empty;
+    [StringLength(150)]
+    [Column("Nombre")]
+    public string Nombre { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(20)]
-    public string RolCliente {get;set;} = string.Empty;
+    [Column("RolCliente", TypeName = "enum('ORIGEN','DESTINO','AMBOS')")]
+    public RolClienteValues RolCliente { get; set; }
 
-    [MaxLength(30)]
+    [StringLength(30)]
+    [Column("Telefono")]
+    public string? Telefono { get; set; }
+
+    [StringLength(120)]
+    [Column("Correo")]
+    public string? Correo { get; set; }
+
+    [StringLength(250)]
+    [Column("Direccion")]
+    public string? Direccion { get; set; }
+
     [Required]
-    public string Telefono {get;set;} = string.Empty;
+    [Column("Activo")]
+    public bool Activo { get; set; } = true;
 
-    [MaxLength(120)]
-    [EmailAddress]
-    public string Correo {get;set;} = string.Empty;
+    public ICollection<Recepcion> Recepciones { get; set; } = new List<Recepcion>();
 
-    [MaxLength(250)]
-    public string Direccion {get;set;} = string.Empty;
-
-    [Required]
-    [Column("Activo" , TypeName = "tinyint(1)")]
-    public bool Activo {get;set;} = true;
-
-    public List<Recepcion> Recepciones {get;set;} = new();
-
-    public List<Despacho> Despachos {get;set;} = new();
+    public ICollection<Despacho> Despachos { get; set; } = new List<Despacho>();
 }

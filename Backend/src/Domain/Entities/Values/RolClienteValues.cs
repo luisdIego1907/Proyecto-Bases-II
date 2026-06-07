@@ -1,8 +1,6 @@
 namespace Domain.Entities.Values;
 
-public class RolClienteValues
+public enum RolClienteValues
 {
-    public const string Origen = "ORIGEN";
-    public const string Destino = "DESTINO";
-    public const string Ambos = "AMBOS";
+    ORIGEN, DESTINO, AMBOS
 }
