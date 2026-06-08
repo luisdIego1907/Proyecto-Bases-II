@@ -5,6 +5,8 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using DomainService.Interfaces;
 using DomainService.Services;
+using Facade.Interfaces;
+using Facade;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,12 @@ builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IRecepcionService, RecepcionService>();
 builder.Services.AddScoped<IDespachoService, DespachoService>();
 builder.Services.AddScoped<IAuditoriaProductoService, AuditoriaProductoService>();
+
+builder.Services.AddScoped<IClienteFacade, ClienteFacade>();
+builder.Services.AddScoped<IProductoFacade, ProductoFacade>();
+builder.Services.AddScoped<IRecepcionFacade, RecepcionFacade>();
+builder.Services.AddScoped<IDespachoFacade, DespachoFacade>();
+builder.Services.AddScoped<IAuditoriaProductoFacade, AuditoriaProductoFacade>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

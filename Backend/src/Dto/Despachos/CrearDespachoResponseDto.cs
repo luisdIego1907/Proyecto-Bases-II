@@ -1,6 +1,6 @@
 namespace Dto.Despachos;
 
-public class CreaerDespachoResponseDto
+public class CrearDespachoResponseDto
 {
      public string Mensaje { get; set; } = string.Empty;
 

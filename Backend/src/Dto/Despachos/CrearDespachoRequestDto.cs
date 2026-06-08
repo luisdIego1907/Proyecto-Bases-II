@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Dto.Despachos;
 
-public class CrearDespachoRequest
+public class CrearDespachoRequestDto
 {
      [Required]
     [Range(1, int.MaxValue)]
