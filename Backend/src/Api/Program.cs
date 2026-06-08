@@ -3,6 +3,8 @@ using Microsoft.OpenApi;
 using Infrastructure;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
+using DomainService.Interfaces;
+using DomainService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,12 @@ builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IRecepcionRepository, RecepcionRepository>();
 builder.Services.AddScoped<IDespachoRepository, DespachoRepository>();
 builder.Services.AddScoped<IAuditoriaProductoRepository, AuditoriaProductoRepository>();
+
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<IRecepcionService, RecepcionService>();
+builder.Services.AddScoped<IDespachoService, DespachoService>();
+builder.Services.AddScoped<IAuditoriaProductoService, AuditoriaProductoService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
