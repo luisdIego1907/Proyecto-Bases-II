@@ -4,15 +4,12 @@ namespace Api.Models.Despachos;
 
 public class AgregarProductoCarritoResponseModel
 {
-     [Required]
-    [Range(1, int.MaxValue)]
+  
+    public string Mensaje { get; set; } = string.Empty;
+
     public int DespachoId { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue)]
     public int ProductoId { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue)]
-    public int CantidadSolicitada { get; set; }
+    public int CantidadAgregada { get; set; }
 }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models.Recepciones;
 
-public class RegistrarRecepcionRquestModel
+public class RegistrarRecepcionRequestModel
 {
     [Required]
     [Range(1, int.MaxValue)]
