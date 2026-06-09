@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Repositories.Results;
 
 namespace Infrastructure;
 
@@ -26,7 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<DespachoDetalle> DespachoDetalles { get; set; }
     public DbSet<AuditoriaProducto> AuditoriasProducto { get; set; }
 
-   protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
@@ -46,6 +47,8 @@ public class AppDbContext : DbContext
         ConfigureDespachoCarrito(modelBuilder);
         ConfigureDespachoDetalle(modelBuilder);
         ConfigureAuditoriaProducto(modelBuilder);
+
+        ConfigureStoredProcedureResults(modelBuilder);
     }
 
     private static void ConfigureRolUsuario(ModelBuilder modelBuilder)
@@ -579,5 +582,21 @@ public class AppDbContext : DbContext
                 .HasForeignKey(a => a.UsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+    }
+
+    private static void ConfigureStoredProcedureResults(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<MensajeResult>().HasNoKey();
+        modelBuilder.Entity<ProductoDetalleResult>().HasNoKey();
+        modelBuilder.Entity<InventarioProductoResult>().HasNoKey();
+        modelBuilder.Entity<MovimientoProductoResult>().HasNoKey();
+        modelBuilder.Entity<RecepcionProductoResult>().HasNoKey();
+        modelBuilder.Entity<RegistrarRecepcionResult>().HasNoKey();
+        modelBuilder.Entity<CrearDespachoResult>().HasNoKey();
+        modelBuilder.Entity<AgregarProductoCarritoResult>().HasNoKey();
+        modelBuilder.Entity<ProcesarDespachoResult>().HasNoKey();
+        modelBuilder.Entity<DespachoResumenResult>().HasNoKey();
+        modelBuilder.Entity<DetalleDespachoResult>().HasNoKey();
+        modelBuilder.Entity<AuditoriaProductoResult>().HasNoKey();
     }
 }

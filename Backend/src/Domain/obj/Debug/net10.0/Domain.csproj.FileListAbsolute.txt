@@ -10,3 +10,4 @@ C:\Users\luisd\Desktop\Proyecto-Bases-II\Backend\src\Domain\obj\Debug\net10.0\Do
 C:\Users\luisd\Desktop\Proyecto-Bases-II\Backend\src\Domain\obj\Debug\net10.0\refint\Domain.dll
 C:\Users\luisd\Desktop\Proyecto-Bases-II\Backend\src\Domain\obj\Debug\net10.0\Domain.pdb
 c:\Users\luisd\Desktop\Proyecto-Bases-II\Backend\src\Domain\obj\Debug\net10.0\ref\Domain.dll
+C:\Users\luisd\Desktop\Proyecto-Bases-II\Backend\src\Domain\obj\Debug\net10.0\Domain.csproj.AssemblyReference.cache

@@ -14,64 +14,72 @@ public class ProductoRepository : IProductoRepository
     }
 
     public async Task<IReadOnlyList<InventarioProductoResult>> ListarInventarioAsync(
-        CancellationToken cancellationToken = default)
+         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<InventarioProductoResult>($"CALL sp_ListarInventario()")
+        return await _context.Set<InventarioProductoResult>()
+            .FromSqlInterpolated($"CALL sp_ListarInventario()")
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
     public async Task<ProductoDetalleResult?> IngresarAsync(
-        string codigo,
-        string nombre,
-        string? detalle,
-        int stockCritico,
-        string bodega,
-        string pasillo,
-        string estante,
-        CancellationToken cancellationToken = default)
+      string codigo,
+    string nombre,
+    string? detalle,
+    int stockCritico,
+    string bodega,
+    string pasillo,
+    string estante,
+    CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<ProductoDetalleResult>($"""
-                CALL sp_IngresarProducto(
-                    {codigo},
-                    {nombre},
-                    {detalle},
-                    {stockCritico},
-                    {bodega},
-                    {pasillo},
-                    {estante}
-                )
-                """)
-            .FirstOrDefaultAsync(cancellationToken);
+        var resultado = await _context.Set<ProductoDetalleResult>()
+            .FromSqlInterpolated($"""
+            CALL sp_IngresarProducto(
+                {codigo},
+                {nombre},
+                {detalle},
+                {stockCritico},
+                {bodega},
+                {pasillo},
+                {estante}
+            )
+            """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task<ProductoDetalleResult?> ModificarAsync(
-        Guid productoResourceId,
-        string nombre,
-        int stockCritico,
-        Guid ubicacionResourceId,
-        CancellationToken cancellationToken = default)
+    Guid productoResourceId,
+    string nombre,
+    int stockCritico,
+    Guid ubicacionResourceId,
+    CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<ProductoDetalleResult>($"""
-                CALL sp_ModificarProducto(
-                    {productoResourceId.ToString()},
-                    {nombre},
-                    {stockCritico},
-                    {ubicacionResourceId.ToString()}
-                )
-                """)
-            .FirstOrDefaultAsync(cancellationToken);
+        var resultado = await _context.Set<ProductoDetalleResult>()
+            .FromSqlInterpolated($"""
+            CALL sp_ModificarProducto(
+                {productoResourceId.ToString()},
+                {nombre},
+                {stockCritico},
+                {ubicacionResourceId.ToString()}
+            )
+            """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task EliminarAsync(
         Guid productoResourceId,
-        CancellationToken cancellationToken = default)
-    {
-        await _context.Database
-            .SqlQuery<MensajeResult>($"CALL sp_EliminarProducto({productoResourceId.ToString()})")
-            .FirstOrDefaultAsync(cancellationToken);
+    CancellationToken cancellationToken = default)
+{
+    await _context.Database.ExecuteSqlInterpolatedAsync($"""
+        CALL sp_EliminarProducto({productoResourceId.ToString()})
+        """,
+        cancellationToken);
     }
 
     public async Task<IReadOnlyList<MovimientoProductoResult>> ListarMovimientosAsync(
