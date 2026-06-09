@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class RecepcionRepository : IRecepcionRepository
 {
-     private readonly AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public RecepcionRepository(AppDbContext context)
     {
@@ -21,8 +21,8 @@ public class RecepcionRepository : IRecepcionRepository
         int usuarioId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<RegistrarRecepcionResult>($"""
+        var resultado = await _context.Set<RegistrarRecepcionResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_RegistrarRecepcion(
                     {productoId},
                     {cantidad},
@@ -31,17 +31,21 @@ public class RecepcionRepository : IRecepcionRepository
                     {usuarioId}
                 )
                 """)
-            .FirstOrDefaultAsync(cancellationToken);
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task<IReadOnlyList<RecepcionProductoResult>> ListarPorProductoAsync(
         int productoId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<RecepcionProductoResult>($"""
+        return await _context.Set<RecepcionProductoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_ListarRecepcionesPorProducto({productoId})
                 """)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 }

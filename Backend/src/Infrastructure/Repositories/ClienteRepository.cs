@@ -1,20 +1,20 @@
 using Domain.Entities;
 using Infrastructure.Repositories.Interfaces;
-using Infrastructure.Repositories.Results;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
 public class ClienteRepository : IClienteRepository
 {
-      private readonly AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public ClienteRepository(AppDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Cliente>> ListarAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Cliente>> ListarAsync(
+        CancellationToken cancellationToken = default)
     {
         return await _context.Clientes
             .FromSqlInterpolated($"CALL sp_ListarClientes()")
@@ -22,9 +22,11 @@ public class ClienteRepository : IClienteRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Cliente?> CrearAsync(Cliente cliente, CancellationToken cancellationToken = default)
+    public async Task<Cliente?> CrearAsync(
+        Cliente cliente,
+        CancellationToken cancellationToken = default)
     {
-        return await _context.Clientes
+        var resultado = await _context.Clientes
             .FromSqlInterpolated($"""
                 CALL sp_CrearCliente(
                     {cliente.Nombre},
@@ -35,12 +37,16 @@ public class ClienteRepository : IClienteRepository
                 )
                 """)
             .AsNoTracking()
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
-    public async Task<Cliente?> ModificarAsync(Cliente cliente, CancellationToken cancellationToken = default)
+    public async Task<Cliente?> ModificarAsync(
+        Cliente cliente,
+        CancellationToken cancellationToken = default)
     {
-        return await _context.Clientes
+        var resultado = await _context.Clientes
             .FromSqlInterpolated($"""
                 CALL sp_ModificarCliente(
                     {cliente.ClienteResourceId.ToString()},
@@ -53,13 +59,18 @@ public class ClienteRepository : IClienteRepository
                 )
                 """)
             .AsNoTracking()
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
-    public async Task EliminarAsync(Guid clienteResourceId, CancellationToken cancellationToken = default)
+    public async Task EliminarAsync(
+        Guid clienteResourceId,
+        CancellationToken cancellationToken = default)
     {
-        await _context.Database
-            .SqlQuery<MensajeResult>($"CALL sp_EliminarCliente({clienteResourceId.ToString()})")
-            .FirstOrDefaultAsync(cancellationToken);
+        await _context.Database.ExecuteSqlInterpolatedAsync($"""
+            CALL sp_EliminarCliente({clienteResourceId.ToString()})
+            """,
+            cancellationToken);
     }
 }

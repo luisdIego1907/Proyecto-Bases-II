@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class AuditoriaProductoRepository : IAuditoriaProductoRepository
 {
-      private readonly AppDbContext _context;
+    private readonly AppDbContext _context;
 
     public AuditoriaProductoRepository(AppDbContext context)
     {
@@ -19,14 +19,15 @@ public class AuditoriaProductoRepository : IAuditoriaProductoRepository
         DateTime fechaFin,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<AuditoriaProductoResult>($"""
+        return await _context.Set<AuditoriaProductoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_ListarAuditoriaProducto(
                     {productoId},
                     {fechaInicio},
                     {fechaFin}
                 )
                 """)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 }

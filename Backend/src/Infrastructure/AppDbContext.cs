@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     {
 
     }
+
     public DbSet<RolUsuario> RolesUsuario { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<UsuarioRol> UsuarioRoles { get; set; }
@@ -31,6 +32,8 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureStoredProcedureResults(modelBuilder);
+
         ConfigureRolUsuario(modelBuilder);
         ConfigureUsuario(modelBuilder);
         ConfigureUsuarioRol(modelBuilder);
@@ -47,8 +50,25 @@ public class AppDbContext : DbContext
         ConfigureDespachoCarrito(modelBuilder);
         ConfigureDespachoDetalle(modelBuilder);
         ConfigureAuditoriaProducto(modelBuilder);
+    }
 
-        ConfigureStoredProcedureResults(modelBuilder);
+    private static void ConfigureStoredProcedureResults(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<MensajeResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<ProductoDetalleResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<InventarioProductoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<MovimientoProductoResult>().HasNoKey().ToView(null);
+
+        modelBuilder.Entity<RecepcionProductoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<RegistrarRecepcionResult>().HasNoKey().ToView(null);
+
+        modelBuilder.Entity<CrearDespachoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<AgregarProductoCarritoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<ProcesarDespachoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<DespachoResumenResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<DetalleDespachoResult>().HasNoKey().ToView(null);
+
+        modelBuilder.Entity<AuditoriaProductoResult>().HasNoKey().ToView(null);
     }
 
     private static void ConfigureRolUsuario(ModelBuilder modelBuilder)
@@ -582,21 +602,5 @@ public class AppDbContext : DbContext
                 .HasForeignKey(a => a.UsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
-    }
-
-    private static void ConfigureStoredProcedureResults(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<MensajeResult>().HasNoKey();
-        modelBuilder.Entity<ProductoDetalleResult>().HasNoKey();
-        modelBuilder.Entity<InventarioProductoResult>().HasNoKey();
-        modelBuilder.Entity<MovimientoProductoResult>().HasNoKey();
-        modelBuilder.Entity<RecepcionProductoResult>().HasNoKey();
-        modelBuilder.Entity<RegistrarRecepcionResult>().HasNoKey();
-        modelBuilder.Entity<CrearDespachoResult>().HasNoKey();
-        modelBuilder.Entity<AgregarProductoCarritoResult>().HasNoKey();
-        modelBuilder.Entity<ProcesarDespachoResult>().HasNoKey();
-        modelBuilder.Entity<DespachoResumenResult>().HasNoKey();
-        modelBuilder.Entity<DetalleDespachoResult>().HasNoKey();
-        modelBuilder.Entity<AuditoriaProductoResult>().HasNoKey();
     }
 }

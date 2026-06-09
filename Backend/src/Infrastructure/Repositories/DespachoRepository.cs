@@ -18,14 +18,17 @@ public class DespachoRepository : IDespachoRepository
         int usuarioId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<CrearDespachoResult>($"""
+        var resultado = await _context.Set<CrearDespachoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_CrearDespacho(
                     {clienteId},
                     {usuarioId}
                 )
                 """)
-            .FirstOrDefaultAsync(cancellationToken);
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task<AgregarProductoCarritoResult?> AgregarProductoCarritoAsync(
@@ -34,15 +37,18 @@ public class DespachoRepository : IDespachoRepository
         int cantidadSolicitada,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<AgregarProductoCarritoResult>($"""
+        var resultado = await _context.Set<AgregarProductoCarritoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_AgregarProductoCarrito(
                     {despachoId},
                     {productoId},
                     {cantidadSolicitada}
                 )
                 """)
-            .FirstOrDefaultAsync(cancellationToken);
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task<ProcesarDespachoResult?> ProcesarAsync(
@@ -50,21 +56,25 @@ public class DespachoRepository : IDespachoRepository
         int usuarioId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<ProcesarDespachoResult>($"""
+        var resultado = await _context.Set<ProcesarDespachoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_ProcesarDespacho(
                     {despachoId},
                     {usuarioId}
                 )
                 """)
-            .FirstOrDefaultAsync(cancellationToken);
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 
     public async Task<IReadOnlyList<DespachoResumenResult>> ListarUltimaSemanaAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<DespachoResumenResult>($"CALL sp_ListarDespachosUltimaSemana()")
+        return await _context.Set<DespachoResumenResult>()
+            .FromSqlInterpolated($"CALL sp_ListarDespachosUltimaSemana()")
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
@@ -73,13 +83,14 @@ public class DespachoRepository : IDespachoRepository
         DateTime fechaFin,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<DespachoResumenResult>($"""
+        return await _context.Set<DespachoResumenResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_ListarDespachosPorFecha(
                     {fechaInicio},
                     {fechaFin}
                 )
                 """)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
@@ -87,10 +98,11 @@ public class DespachoRepository : IDespachoRepository
         int despachoId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Database
-            .SqlQuery<DetalleDespachoResult>($"""
+        return await _context.Set<DetalleDespachoResult>()
+            .FromSqlInterpolated($"""
                 CALL sp_VerDetalleDespacho({despachoId})
                 """)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 }
