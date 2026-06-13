@@ -1,19 +1,25 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+
+import { isAuthenticated } from "./auth/sessionAuth";
+import ProtectedRoute from "./security/ProtectedRoute";
+
 
 import Header from "./shared/Header";
+
+
 import Home from "./features/home/Home";
-
-import ClientList from "./features/ClientList";
-import ClientForm from "./components/forms/ClientForm";
-
-import ProductList from "./features/ProductList";
-import ProductForm from "./components/forms/ProductForm";
-
 import LoginForm from "./features/login/Login";
-import ProtectedRoute from "./security/ProtectedRoute";
-import { isAuthenticated } from "./auth/sessionAuth";
+import ProductList from "./features/ProductList";
 
+
+import ClientList from "./features/pages/ClientList";
+import InventoryList from "./features/pages/InventoryList";
+
+import ClientEditForm from "./components/forms/ClientEditForm";
+import ClientRegisterForm from "./components/forms/ClientRegisterForm";
+import ProductForm from "./components/forms/ProductForm";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -33,9 +39,11 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-    
+
+            {/* Public route */}
             <Route path="/login" element={<LoginForm />} />
 
+            {/* Home */}
             <Route
               path="/"
               element={
@@ -44,6 +52,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Clients */}
             <Route
               path="/clients"
               element={
@@ -52,9 +62,26 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/clients/register" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
-            <Route path="/clients/:id" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
 
+            <Route
+              path="/clients/register"
+              element={
+                <ProtectedRoute>
+                  <ClientRegisterForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/clients/:id"
+              element={
+                <ProtectedRoute>
+                  <ClientEditForm />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Products */}
             <Route
               path="/products"
               element={
@@ -73,14 +100,16 @@ function App() {
               }
             />
 
+            {/* Inventory */}
             <Route
-              path="/products/:id"
+              path="/inventory"
               element={
                 <ProtectedRoute>
-                  <ProductForm />
+                  <InventoryList />
                 </ProtectedRoute>
               }
             />
+
           </Routes>
         </main>
       </div>

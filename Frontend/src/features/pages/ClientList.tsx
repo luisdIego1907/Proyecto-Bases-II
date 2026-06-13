@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { ClientListItem } from "../data/client";
+import type { ClientListItem } from "../../data/client";
 
-import ClientTable from "../features/ClientTable";
-import { deleteCliente, getClientes } from "../services/ClientService";
-import { PermissionDenied } from "../shared/PermissionDenied";
-import DeleteButton from "../shared/DeleteButton";
+import ClientTable from "../../components/Tables/ClientTable";
+import { deleteCliente, getClientes } from "../../services/ClientService";
+import { PermissionDenied } from "../../shared/PermissionDenied";
+import DeleteButton from "../../shared/DeleteButton";
 
 export default function ClientList() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ export default function ClientList() {
     setSuccessMessage("");
 
     setSelectedClients((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 
@@ -54,7 +54,7 @@ export default function ClientList() {
       await Promise.all(selectedClients.map((id) => deleteCliente(id)));
 
       setClientList((prev) =>
-        prev.filter((c) => !selectedClients.includes(c.clienteResourceId))
+        prev.filter((c) => !selectedClients.includes(c.clienteResourceId)),
       );
 
       setSelectedClients([]);
