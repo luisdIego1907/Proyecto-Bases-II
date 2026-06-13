@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { ClientListItem } from "../../data/client";
-import { getClientes } from "../../services/ClientService";
+
+import {
+  getClientes,
+  updateCliente,
+  createCliente,
+} from "../../services/ClientService";
 
 type ClientFormData = {
   nombre: string;
-  rol_cliente: "ORIGEN" | "DESTINO" | "AMBOS";
+  rolCliente: "ORIGEN" | "DESTINO" | "AMBOS";
   telefono: string;
   correo: string;
   direccion: string;
@@ -20,7 +24,7 @@ export default function ClientForm() {
 
   const [form, setForm] = useState<ClientFormData>({
     nombre: "",
-    rol_cliente: "ORIGEN",
+    rolCliente: "ORIGEN",
     telefono: "",
     correo: "",
     direccion: "",
@@ -30,11 +34,18 @@ export default function ClientForm() {
   const [loading, setLoading] = useState(isEdit);
 
   useEffect(() => {
-    async function load() {
-      if (!id) return;
+  async function load() {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
-      const clients: ClientListItem[] = await getClientes();
-      const found = clients.find((c) => c.clienteResourceId === id);
+    try {
+      const clientes = await getClientes();
+
+      const found = clientes.find(
+        (c) => c.clienteResourceId === id
+      );
 
       if (!found) {
         navigate("/clients");
@@ -43,18 +54,22 @@ export default function ClientForm() {
 
       setForm({
         nombre: found.nombre,
-        rol_cliente: found.rol_cliente,
+        rolCliente: found.rolCliente,
         telefono: found.telefono ?? "",
         correo: found.correo ?? "",
         direccion: found.direccion ?? "",
         activo: found.activo,
       });
-
+    } catch (error) {
+      console.error("Error cargando cliente:", error);
+      navigate("/clients");
+    } finally {
       setLoading(false);
     }
+  }
 
-    void load();
-  }, [id, navigate]);
+  void load();
+}, [id, navigate]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -70,13 +85,24 @@ export default function ClientForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+  e: React.FormEvent
+) => {
+  e.preventDefault();
 
-    console.log(isEdit ? "EDITAR CLIENTE" : "CREAR CLIENTE", form);
+  try {
+    if (isEdit && id) {
+      await updateCliente(id, form);
+    } else {
+      await createCliente(form);
+    }
 
     navigate("/clients");
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Ocurrió un error al guardar el cliente.");
+  }
+};
 
   if (loading) {
     return (
@@ -124,8 +150,8 @@ export default function ClientForm() {
               Tipo de cliente
             </label>
             <select
-              name="rol_cliente"
-              value={form.rol_cliente}
+              name="rolCliente"
+              value={form.rolCliente}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
                          focus:outline-none focus:ring-2 focus:ring-cyan-300"

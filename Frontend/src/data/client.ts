@@ -1,7 +1,8 @@
 export type ClientListItem = {
+  clienteId: number;
   clienteResourceId: string;
   nombre: string;
-  rol_cliente: "ORIGEN" | "DESTINO" | "AMBOS";
+  rolCliente: "ORIGEN" | "DESTINO" | "AMBOS";
   telefono?: string;
   correo?: string;
   direccion?: string;
@@ -10,7 +11,7 @@ export type ClientListItem = {
 
 export type ClientData = {
   nombre: string;
-  rol_cliente: "ORIGEN" | "DESTINO" | "AMBOS";
+  rolCliente: "ORIGEN" | "DESTINO" | "AMBOS";
   telefono?: string;
   correo?: string;
   direccion?: string;
