@@ -3,6 +3,8 @@ export type ClientListItem = {
   nombre: string;
   rol_cliente: "ORIGEN" | "DESTINO" | "AMBOS";
   telefono?: string;
+  correo?: string;
+  direccion?: string;
   activo: boolean;
 };
 
