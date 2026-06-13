@@ -1,4 +1,5 @@
-import type { ClientListItem } from "../data/client";
+import type { ClientListItem } from "../../data/client";
+
 
 interface Props {
   clients: ClientListItem[];
@@ -42,7 +43,7 @@ export default function ClientTable({
 
                 <td className="px-6 py-4">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                    {c.rol_cliente}
+                    {c.rolCliente}
                   </span>
                 </td>
 
