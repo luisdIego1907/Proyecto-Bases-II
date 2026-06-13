@@ -1,25 +1,18 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-
 import { isAuthenticated } from "./auth/sessionAuth";
 import ProtectedRoute from "./security/ProtectedRoute";
 
-
 import Header from "./shared/Header";
-
 
 import Home from "./features/home/Home";
 import LoginForm from "./features/login/Login";
 import ProductList from "./features/ProductList";
-
-
-import ClientList from "./features/pages/ClientList";
-import InventoryList from "./features/pages/InventoryList";
-
-import ClientEditForm from "./components/forms/ClientEditForm";
-import ClientRegisterForm from "./components/forms/ClientRegisterForm";
+import ClientForm from "./components/forms/ClientForm";
 import ProductForm from "./components/forms/ProductForm";
+import InventoryList from "./features/pages/InventoryList";
+import ClientList from "./features/pages/ClientList";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -39,7 +32,6 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-
             {/* Public route */}
             <Route path="/login" element={<LoginForm />} />
 
@@ -67,7 +59,7 @@ function App() {
               path="/clients/register"
               element={
                 <ProtectedRoute>
-                  <ClientRegisterForm />
+                  <ClientForm />
                 </ProtectedRoute>
               }
             />
@@ -76,7 +68,7 @@ function App() {
               path="/clients/:id"
               element={
                 <ProtectedRoute>
-                  <ClientEditForm />
+                  <ClientForm />
                 </ProtectedRoute>
               }
             />
@@ -109,7 +101,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
           </Routes>
         </main>
       </div>
