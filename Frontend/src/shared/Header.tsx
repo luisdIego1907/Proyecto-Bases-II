@@ -9,12 +9,10 @@ import {
   X,
   LogOut,
   User,
+  Clipboard,
 } from "lucide-react";
 
-import {
-  isAuthenticated,
-  clearSession,
-} from "../auth/sessionAuth";
+import { isAuthenticated, clearSession } from "../auth/sessionAuth";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +30,7 @@ export default function Header() {
     { name: "Inicio", icon: <House size={18} />, to: "/" },
     { name: "Clientes", icon: <Users size={18} />, to: "/clients" },
     { name: "Productos", icon: <Box size={18} />, to: "/products" },
+    { name: "Inventario", icon: <Clipboard size={18} />, to: "/inventory" },
   ];
 
   const handleLogout = () => {
@@ -44,18 +43,13 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-
       <div className="container mx-auto px-6">
-
         <div className="flex items-center justify-between h-20">
-
           <Link to="/" className="flex items-center gap-3">
             <Package size={34} className="text-blue-600" />
 
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-slate-800">
-                SGID
-              </span>
+              <span className="text-xl font-bold text-slate-800">SGID</span>
               <span className="text-xs text-slate-500">
                 Inventario y Despachos
               </span>
@@ -63,7 +57,6 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-
             {links.map((link) => (
               <Link
                 key={link.name}
@@ -81,7 +74,6 @@ export default function Header() {
             ))}
 
             <div className="relative ml-2">
-
               <button
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -92,7 +84,6 @@ export default function Header() {
 
               {dropdownOpen && (
                 <div className="absolute right-0 mt-3 w-44 bg-white border border-slate-200 rounded-xl shadow-lg py-2">
-
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -101,12 +92,9 @@ export default function Header() {
                     <LogOut size={16} />
                     Cerrar sesión
                   </button>
-
                 </div>
               )}
-
             </div>
-
           </nav>
 
           <button
@@ -116,14 +104,11 @@ export default function Header() {
           >
             {isOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
-
         </div>
 
         {isOpen && (
           <div className="md:hidden border-t border-slate-200 py-4">
-
             <nav className="flex flex-col gap-4">
-
               {links.map((link) => (
                 <Link
                   key={link.name}
@@ -144,12 +129,9 @@ export default function Header() {
                 <LogOut size={18} />
                 Cerrar sesión
               </button>
-
             </nav>
-
           </div>
         )}
-
       </div>
     </header>
   );
