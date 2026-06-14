@@ -13,6 +13,7 @@ import ClientForm from "./components/forms/ClientForm";
 import ProductForm from "./components/forms/ProductForm";
 import InventoryList from "./features/pages/InventoryList";
 import ClientList from "./features/pages/ClientList";
+import DispatchList from "./features/pages/DispatchList";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -98,6 +99,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <InventoryList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/dispatch"
+              element={
+                <ProtectedRoute>
+                  <DispatchList />
                 </ProtectedRoute>
               }
             />
