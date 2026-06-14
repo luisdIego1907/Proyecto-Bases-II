@@ -24,4 +24,8 @@ public interface IProductoFacade
         int productoId,
         RangoFechaRequestDto request,
         CancellationToken cancellationToken = default);
+
+    Task<ProductoDetalleResponseDto?> ObtenerPorIdAsync(
+    int productoId,
+    CancellationToken cancellationToken = default);
 }

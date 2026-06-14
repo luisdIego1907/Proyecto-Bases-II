@@ -145,4 +145,20 @@ public class ProductoService : IProductoService
             fechaFin,
             cancellationToken);
     }
+
+    public async Task<ProductoDetalleResult?> ObtenerPorIdAsync(
+    int productoId,
+    CancellationToken cancellationToken = default)
+{
+    if (productoId <= 0)
+    {
+        throw new ArgumentOutOfRangeException(
+            nameof(productoId),
+            "El identificador del producto debe ser mayor que cero.");
+    }
+
+    return await _productoRepository.ObtenerPorIdAsync(
+        productoId,
+        cancellationToken);
+}
 }

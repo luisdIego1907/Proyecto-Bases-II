@@ -75,11 +75,11 @@ public class ProductoRepository : IProductoRepository
     public async Task EliminarAsync(
         Guid productoResourceId,
     CancellationToken cancellationToken = default)
-{
-    await _context.Database.ExecuteSqlInterpolatedAsync($"""
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync($"""
         CALL sp_EliminarProducto({productoResourceId.ToString()})
         """,
-        cancellationToken);
+            cancellationToken);
     }
 
     public async Task<IReadOnlyList<MovimientoProductoResult>> ListarMovimientosAsync(
@@ -97,5 +97,19 @@ public class ProductoRepository : IProductoRepository
                 )
                 """)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<ProductoDetalleResult?> ObtenerPorIdAsync(
+    int productoId,
+    CancellationToken cancellationToken = default)
+    {
+        var resultado = await _context.Set<ProductoDetalleResult>()
+            .FromSqlInterpolated($"""
+            CALL sp_ObtenerProductoPorId({productoId})
+            """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return resultado.FirstOrDefault();
     }
 }
