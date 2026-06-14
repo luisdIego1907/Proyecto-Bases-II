@@ -1,6 +1,13 @@
 
 USE sgid_db;
 
+
+CREATE USER 'app_sgid'@'localhost' IDENTIFIED BY 'AppSgid_12345';
+
+GRANT EXECUTE ON SGID_DB.* TO 'app_sgid'@'localhost';
+
+FLUSH PRIVILEGES;
+
 INSERT INTO ROL_USUARIO (Nombre) VALUES
 ('ADMIN'),
 ('OPERARIO'),

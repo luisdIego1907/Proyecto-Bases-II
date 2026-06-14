@@ -1166,3 +1166,33 @@ BEGIN
     SELECT 'Producto eliminado correctamente.' AS Mensaje;
 END $$
 DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS sp_ObtenerProductoPorId$$
+
+CREATE PROCEDURE sp_ObtenerProductoPorId(
+    IN p_ProductoId INT
+)
+BEGIN
+    SELECT
+        p.ProductoId,
+        p.ProductoResourceId,
+        p.Codigo,
+        p.Nombre,
+        p.Detalle,
+        p.CantidadInventario,
+        p.StockCritico,
+        p.Activo,
+        u.UbicacionResourceId,
+        b.Codigo AS CodigoBodega,
+        b.Nombre AS Bodega,
+        pa.Codigo AS Pasillo,
+        e.Codigo AS Estante
+    FROM PRODUCTO p
+    INNER JOIN UBICACION u ON p.UbicacionId = u.UbicacionId
+    INNER JOIN ESTANTE e ON u.EstanteId = e.EstanteId
+    INNER JOIN PASILLO pa ON e.PasilloId = pa.PasilloId
+    INNER JOIN BODEGA b ON pa.BodegaId = b.BodegaId
+    WHERE p.ProductoId = p_ProductoId;
+END$$
+DELIMITER ;
