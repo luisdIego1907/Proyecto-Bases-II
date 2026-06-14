@@ -119,26 +119,26 @@ public class ProductosController : ControllerBase
     }
 
     [HttpGet("{productoId:int}")]
-public async Task<ActionResult<ProductoDetalleResponseModel>> ObtenerPorId(
+    public async Task<ActionResult<ProductoDetalleResponseModel>> ObtenerPorId(
     int productoId,
     CancellationToken cancellationToken)
-{
-    try
     {
-        var producto = await _productoFacade.ObtenerPorIdAsync(
-            productoId,
-            cancellationToken);
-
-        if (producto is null)
+        try
         {
-            return NotFound(new { mensaje = "Producto no encontrado." });
-        }
+            var producto = await _productoFacade.ObtenerPorIdAsync(
+                productoId,
+                cancellationToken);
 
-        return Ok(ProductoApiMapper.ToModel(producto));
+            if (producto is null)
+            {
+                return NotFound(new { mensaje = "Producto no encontrado." });
+            }
+
+            return Ok(ProductoApiMapper.ToModel(producto));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensaje = ex.InnerException?.Message ?? ex.Message });
+        }
     }
-    catch (Exception ex)
-    {
-        return BadRequest(new { mensaje = ex.InnerException?.Message ?? ex.Message });
-    }
-}
 }
