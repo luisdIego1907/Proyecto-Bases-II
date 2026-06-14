@@ -1196,3 +1196,77 @@ BEGIN
     WHERE p.ProductoId = p_ProductoId;
 END$$
 DELIMITER ;
+
+#ROLES Y USUARIOS
+
+DELIMITER $$ 
+DROP PROCEDURE IF EXISTS sp_ListarRolesUsuario$$
+CREATE PROCEDURE sp_ListarRolesUsuario()
+BEGIN
+    SELECT
+        RolUsuarioId,
+        RolUsuarioResourceId,
+        Nombre
+    FROM ROL_USUARIO
+    ORDER BY Nombre;
+END
+$$
+DELIMITER ;
+
+DELIMITER $$ 
+DROP PROCEDURE IF EXISTS sp_ListarUsuarios$$
+CREATE PROCEDURE sp_ListarUsuarios()
+BEGIN
+    SELECT
+        UsuarioId,
+        UsuarioResourceId,
+        NombreUsuario,
+        Nombre,
+        Apellidos,
+        Correo,
+        ContrasenaHash,
+        Activo
+    FROM USUARIO
+    ORDER BY NombreUsuario;
+END
+$$
+DELIMITER ;
+
+DELIMITER $$ 
+DROP PROCEDURE IF EXISTS sp_ObtenerUsuarioPorResourceId$$
+CREATE PROCEDURE sp_ObtenerUsuarioPorResourceId(
+    IN p_UsuarioResourceId CHAR(36)
+)
+BEGIN
+    SELECT
+        UsuarioId,
+        UsuarioResourceId,
+        NombreUsuario,
+        Nombre,
+        Apellidos,
+        Correo,
+        ContrasenaHash,
+        Activo
+    FROM USUARIO
+    WHERE UsuarioResourceId = p_UsuarioResourceId
+    LIMIT 1;
+END
+$$
+DELIMITER ;
+
+DELIMITER $$ 
+DROP PROCEDURE IF EXISTS sp_ListarRolesPorUsuarioResourceId$$
+CREATE PROCEDURE sp_ListarRolesPorUsuarioResourceId(
+    IN p_UsuarioResourceId CHAR(36)
+)
+BEGIN
+    SELECT
+        r.Nombre
+    FROM USUARIO u
+    INNER JOIN USUARIO_ROL ur ON ur.UsuarioId = u.UsuarioId
+    INNER JOIN ROL_USUARIO r ON r.RolUsuarioId = ur.RolUsuarioId
+    WHERE u.UsuarioResourceId = p_UsuarioResourceId
+    ORDER BY r.Nombre;
+END
+$$
+DELIMITER ;
