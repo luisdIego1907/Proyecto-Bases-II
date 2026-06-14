@@ -1,0 +1,18 @@
+namespace Api.Models.Usuarios;
+
+public class UsuarioResponseModel
+{
+    public int UsuarioId { get; set; }
+
+    public Guid UsuarioResourceId { get; set; }
+
+    public string NombreUsuario { get; set; } = string.Empty;
+
+    public string Nombre { get; set; } = string.Empty;
+
+    public string Apellidos { get; set; } = string.Empty;
+
+    public string Correo { get; set; } = string.Empty;
+
+    public bool Activo { get; set; }
+}

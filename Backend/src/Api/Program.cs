@@ -62,6 +62,15 @@ builder.Services.AddScoped<IRecepcionFacade, RecepcionFacade>();
 builder.Services.AddScoped<IDespachoFacade, DespachoFacade>();
 builder.Services.AddScoped<IAuditoriaProductoFacade, AuditoriaProductoFacade>();
 
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IRolUsuarioRepository, RolUsuarioRepository>();
+
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IRolUsuarioService, RolUsuarioService>();
+
+builder.Services.AddScoped<IUsuarioFacade, UsuarioFacade>();
+builder.Services.AddScoped<IRolUsuarioFacade, RolUsuarioFacade>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
