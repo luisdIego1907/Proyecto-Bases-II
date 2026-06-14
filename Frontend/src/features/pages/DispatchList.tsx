@@ -1,19 +1,46 @@
 import { useEffect, useState } from "react";
 
 import type { DispatchSummary } from "../../data/dispatch/DispatchResponses";
+import type { DispatchDetail } from "../../data/dispatch/DispatchDetailResponse";
+
 import DispatchTable from "../../components/Tables/DispatchTable";
-import { getDispatches } from "../../services/DispatchService";
 import DispatchFilter from "../../components/dispatch/DispatchFilter";
+import DispatchDetailModal from "../../components/dispatch/DispatchDetailModal";
+
+import { getDispatches } from "../../services/DispatchService";
+import { getDispatchDetails } from "../../services/DespachoService";
 
 export default function DispatchList() {
+  // Lista principal
   const [dispatches, setDispatches] = useState<DispatchSummary[]>([]);
 
+  // Estados de pantalla
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
+  // Filtros
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  // Modal detalle
+  const [dispatchDetails, setDispatchDetails] = useState<DispatchDetail[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  async function handleViewDetail(dispatchId: number) {
+    try {
+      const details = await getDispatchDetails(dispatchId);
+
+      setDispatchDetails(details);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.log(error);
+      setError("No se pudo cargar la información del despacho");
+    }
+  }
+
+  function handleCloseModal() {
+    setIsModalOpen(false);
+  }
 
   function handleFilter() {
     console.log("Filtrar");
@@ -28,11 +55,9 @@ export default function DispatchList() {
     async function load() {
       try {
         const data = await getDispatches();
-
         setDispatches(data);
       } catch (error) {
         console.log(error);
-
         setError("No se pudo cargar la información");
       } finally {
         setLoading(false);
@@ -43,16 +68,18 @@ export default function DispatchList() {
   }, []);
 
   if (loading) {
-    return <p>Cargando...</p>;
+    return (
+      <div className="flex justify-center py-24">
+        <p className="text-lg text-slate-500">Cargando despachos...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div className="flex justify-center py-24">
         <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
-          <h2 className="text-xl font-semibold text-red-700">
-            No se pudieron cargar los productos
-          </h2>
+          <h2 className="text-xl font-semibold text-red-700">{error}</h2>
         </div>
       </div>
     );
@@ -60,29 +87,44 @@ export default function DispatchList() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      {/*Barra de filtrado*/}
-      <DispatchFilter
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-        onFilter={handleFilter}
-        onClear={handleClear}
-      />
-      <div className="flex justify-between mb-8">
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Despachos</h1>
+          <h1 className="text-3xl font-bold text-slate-800">
+            Gestión de Despachos
+          </h1>
 
-          <p className="text-gray-500 mt-1">
+          <p className="mt-1 text-slate-500">
             Administre las salidas del almacén
           </p>
         </div>
 
-        <button className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-3 rounded-xl font-medium">
+        <button className="rounded-xl bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-700">
           Registrar despacho
         </button>
       </div>
-      <DispatchTable dispatches={dispatches} />
+
+      {/* Filtro */}
+      <div className="mb-8">
+        <DispatchFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+          onFilter={handleFilter}
+          onClear={handleClear}
+        />
+      </div>
+
+      {/* Tabla */}
+      <DispatchTable dispatches={dispatches} onViewDetail={handleViewDetail} />
+
+      {/* Modal */}
+      <DispatchDetailModal
+        details={dispatchDetails}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }

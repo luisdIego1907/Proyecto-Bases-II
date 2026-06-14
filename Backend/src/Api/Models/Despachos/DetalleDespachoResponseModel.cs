@@ -2,7 +2,7 @@ namespace Api.Models.Despachos;
 
 public class DetalleDespachoResponseModel
 {
-      public int DespachoId { get; set; }
+    public int DespachoId { get; set; }
 
     public string Codigo { get; set; } = string.Empty;
 
