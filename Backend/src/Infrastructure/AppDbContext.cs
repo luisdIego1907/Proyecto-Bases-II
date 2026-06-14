@@ -69,6 +69,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<DetalleDespachoResult>().HasNoKey().ToView(null);
 
         modelBuilder.Entity<AuditoriaProductoResult>().HasNoKey().ToView(null);
+
+        modelBuilder.Entity<UsuarioResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<RolUsuarioResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<UsuarioRolResult>().HasNoKey().ToView(null);
     }
 
     private static void ConfigureRolUsuario(ModelBuilder modelBuilder)
