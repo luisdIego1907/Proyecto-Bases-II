@@ -33,4 +33,8 @@ public interface IProductoService
         DateTime fechaInicio,
         DateTime fechaFin,
         CancellationToken cancellationToken = default);
+    
+    Task<ProductoDetalleResult?> ObtenerPorIdAsync(
+    int productoId,
+    CancellationToken cancellationToken = default);
 }

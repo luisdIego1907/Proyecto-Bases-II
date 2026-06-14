@@ -85,4 +85,17 @@ public class ProductoFacade : IProductoFacade
             .Select(ProductoMapper.ToResponseDto)
             .ToList();
     }
+
+    public async Task<ProductoDetalleResponseDto?> ObtenerPorIdAsync(
+    int productoId,
+    CancellationToken cancellationToken = default)
+{
+    var producto = await _productoService.ObtenerPorIdAsync(
+        productoId,
+        cancellationToken);
+
+    return producto is null
+        ? null
+        : ProductoMapper.ToResponseDto(producto);
+}
 }
