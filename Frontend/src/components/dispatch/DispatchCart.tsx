@@ -2,10 +2,11 @@ import type { CartItem } from "../../data/dispatch/CartItem";
 
 interface Props {
   cart: CartItem[];
+  onRemove: (productoId: number) => void;
   onProcess: () => void;
 }
 
-export default function DispatchCart({ cart, onProcess }: Props) {
+export default function DispatchCart({ cart, onRemove, onProcess }: Props) {
   const totalProducts = cart.reduce((total, item) => total + item.cantidad, 0);
 
   return (

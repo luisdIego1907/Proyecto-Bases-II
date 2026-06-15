@@ -15,13 +15,13 @@ export default function CreateDispatch() {
     console.log("Crear despacho para cliente:", selectedClient);
   }
 
-  // Temporal: procesar despacho
+  // Temporal: procesar despacho; conectar BE
   function handleProcessDispatch() {
     console.log("Procesar despacho");
   }
 
   //Obtener la tabla de productos
-  const [products] = useState<InventarioData[]>(
+  const [products, setProducts] = useState<InventarioData[]>(
     inventoryMock.filter((p) => p.cantidadInventario > 0),
   );
 
@@ -31,6 +31,20 @@ export default function CreateDispatch() {
     const product = products.find((p) => p.productoId === productId);
 
     if (!product) return;
+
+    // VALIDACIONES
+
+    if (quantity <= 0) {
+      alert("Ingrese una cantidad válida");
+      return;
+    }
+
+    if (quantity > product.cantidadInventario) {
+      alert("Stock insuficiente");
+      return;
+    }
+
+    // actualizar carrito
 
     setCart((prev) => {
       const existing = prev.find((item) => item.productoId === productId);
@@ -55,6 +69,44 @@ export default function CreateDispatch() {
         },
       ];
     });
+
+    // descontar stock visualmente
+
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.productoId === productId
+          ? {
+              ...product,
+              cantidadInventario: product.cantidadInventario - quantity,
+            }
+          : product,
+      ),
+    );
+  }
+
+  //Funcion para quitar items del carrito
+  function handleRemoveProduct(productId: number) {
+    const cartItem = cart.find((item) => item.productoId === productId);
+
+    if (!cartItem) return;
+
+    // devolver stock
+
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.productoId === productId
+          ? {
+              ...product,
+              cantidadInventario:
+                product.cantidadInventario + cartItem.cantidad,
+            }
+          : product,
+      ),
+    );
+
+    // quitar carrito
+
+    setCart((prev) => prev.filter((item) => item.productoId !== productId));
   }
 
   return (
@@ -99,18 +151,11 @@ export default function CreateDispatch() {
         </div>
 
         {/* Carrito */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          {/* Temporal */}
-          <DispatchCart cart={cart} onProcess={handleProcessDispatch} />
-
-          {/* Botón */}
-          <button
-            onClick={handleProcessDispatch}
-            className="w-full rounded-xl bg-green-600 px-4 py-3 font-medium text-white transition hover:bg-green-700"
-          >
-            Procesar despacho
-          </button>
-        </div>
+        <DispatchCart
+          cart={cart}
+          onRemove={handleRemoveProduct}
+          onProcess={handleProcessDispatch}
+        />
       </div>
     </div>
   );

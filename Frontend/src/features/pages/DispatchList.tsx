@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type { DispatchSummary } from "../../data/dispatch/DispatchResponses";
 import type { DispatchDetail } from "../../data/dispatch/DispatchDetailResponse";
-
 import DispatchTable from "../../components/Tables/DispatchTable";
 import DispatchFilter from "../../components/dispatch/DispatchFilter";
 import DispatchDetailModal from "../../components/dispatch/DispatchDetailModal";
 
-import { getDispatches } from "../../services/DispatchService";
-import { getDispatchDetails } from "../../services/DespachoService";
-import { useNavigate } from "react-router-dom";
+import {
+  getDispatches,
+  getDispatchDetails,
+} from "../../services/DispatchService";
 
 export default function DispatchList() {
-  // Lista principal
+  // Lista principal de despachos
   const [dispatches, setDispatches] = useState<DispatchSummary[]>([]);
 
   // Estados de pantalla
@@ -28,14 +29,15 @@ export default function DispatchList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
+
   async function handleViewDetail(dispatchId: number) {
     try {
-      const details = await getDispatchDetails(dispatchId);
+      const dispatchDetail = await getDispatchDetails(dispatchId);
 
-      setDispatchDetails(details);
+      setDispatchDetails(dispatchDetail);
       setIsModalOpen(true);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setError("No se pudo cargar la información del despacho");
     }
   }
@@ -44,8 +46,9 @@ export default function DispatchList() {
     setIsModalOpen(false);
   }
 
+  // Temporal hasta conectar backend
   function handleFilter() {
-    console.log("Filtrar");
+    console.log("Filtro pendiente de conectar");
   }
 
   function handleClear() {
@@ -57,9 +60,10 @@ export default function DispatchList() {
     async function load() {
       try {
         const data = await getDispatches();
+
         setDispatches(data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setError("No se pudo cargar la información");
       } finally {
         setLoading(false);
@@ -69,14 +73,20 @@ export default function DispatchList() {
     load();
   }, []);
 
+  // Loading
   if (loading) {
     return (
-      <div className="flex justify-center py-24">
-        <p className="text-lg text-slate-500">Cargando despachos...</p>
+      <div className="flex flex-col items-center justify-center py-24">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-cyan-600 border-t-transparent" />
+
+        <h2 className="mt-6 text-xl font-semibold text-slate-700">
+          Cargando despachos
+        </h2>
       </div>
     );
   }
 
+  // Error
   if (error) {
     return (
       <div className="flex justify-center py-24">
@@ -103,13 +113,13 @@ export default function DispatchList() {
 
         <button
           onClick={() => navigate("/dispatch/create")}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-3 rounded-xl font-medium"
+          className="rounded-xl bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-700"
         >
           Registrar despacho
         </button>
       </div>
 
-      {/* Filtro */}
+      {/* Filtros */}
       <div className="mb-8">
         <DispatchFilter
           startDate={startDate}
@@ -121,10 +131,23 @@ export default function DispatchList() {
         />
       </div>
 
-      {/* Tabla */}
-      <DispatchTable dispatches={dispatches} onViewDetail={handleViewDetail} />
+      {/* Tabla o Empty State */}
+      {dispatches.length === 0 ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="max-w-lg rounded-3xl border border-slate-200 bg-white px-10 py-12 text-center shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-700">
+              No hay despachos registrados
+            </h2>
+          </div>
+        </div>
+      ) : (
+        <DispatchTable
+          dispatches={dispatches}
+          onViewDetail={handleViewDetail}
+        />
+      )}
 
-      {/* Modal */}
+      {/* Modal detalle */}
       <DispatchDetailModal
         details={dispatchDetails}
         isOpen={isModalOpen}
