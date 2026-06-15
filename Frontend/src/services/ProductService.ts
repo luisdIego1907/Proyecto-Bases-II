@@ -2,84 +2,111 @@ import { config } from "../config";
 import type { InventarioData } from "../data/Stock";
 import type { Product } from "../data/product";
 
-//url del backend
 const URL_API = `${config.api.url}/api/productos`;
 
-let products: Product[] = [
-  {
-    productoId: 1,
-    productoResourceId: "uuid-1",
-    codigo: "PRD-001",
-    nombre: "Laptop Ultrabook",
-    detalle: "Laptop liviana empresarial",
-    stockCritico: 10,
-    cantidadInventario: 25,
-    ubicacionId: 1,
-    activo: true,
-  },
-  {
-    productoId: 2,
-    productoResourceId: "uuid-2",
-    codigo: "PRD-002",
-    nombre: "Mouse Inalámbrico",
-    detalle: "Mouse ergonómico",
-    stockCritico: 15,
-    cantidadInventario: 40,
-    ubicacionId: 2,
-    activo: true,
-  },
-];
-
 export async function getProducts(): Promise<Product[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve([...products]), 300);
-  });
+  const response = await fetch(`${URL_API}/inventario`);
+
+  if (!response.ok) {
+    throw new Error("Error al cargar productos");
+  }
+
+  return await response.json();
 }
 
-export async function deleteProduct(id: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      products = products.filter((p) => p.productoId !== id);
-      resolve();
-    }, 300);
-  });
+export async function getProductById(
+  productoId: number
+): Promise<Product> {
+  const response = await fetch(`${URL_API}/${productoId}`);
+
+  if (!response.ok) {
+    throw new Error("Error al obtener producto");
+  }
+
+  return await response.json();
+}
+
+export async function deleteProduct(
+  productoResourceId: string
+): Promise<void> {
+  const response = await fetch(
+    `${URL_API}/${productoResourceId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al eliminar producto");
+  }
 }
 
 export async function createProduct(
-  product: Omit<Product, "productoId" | "productoResourceId">
+  product: {
+    codigo: string;
+    nombre: string;
+    detalle?: string;
+    stockCritico: number;
+    bodega: string;
+    pasillo: string;
+    estante: string;
+  }
 ): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      products.push({
-        ...product,
-        productoId: Date.now(),
-        productoResourceId: crypto.randomUUID(),
-      });
-      resolve();
-    }, 300);
+  const response = await fetch(URL_API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      codigo: product.codigo,
+      nombre: product.nombre,
+      detalle: product.detalle,
+      stockCritico: product.stockCritico,
+      bodega: product.bodega,
+      pasillo: product.pasillo,
+      estante: product.estante,
+    }),
   });
+
+  if (!response.ok) {
+    throw new Error("Error al crear producto");
+  }
 }
 
-export async function updateProduct(updated: Product): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      products = products.map((p) =>
-        p.productoId === updated.productoId ? updated : p
-      );
-      resolve();
-    }, 300);
-  });
+export async function updateProduct(
+  product: Product
+): Promise<void> {
+  const response = await fetch(
+    `${URL_API}/${product.productoResourceId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre: product.nombre,
+        stockCritico: product.stockCritico,
+        ubicacionResourceId: product.ubicacionResourceId,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al actualizar producto");
+  }
 }
 
 //Funcion listar inventario, conecta directo al backend esta lista para no hacerlo despues
 export async function getInventory(): Promise<InventarioData[]> {
   try {
-    const response = await fetch(URL_API+"/inventario");
+    const response = await fetch(URL_API + "/inventario");
 
     if (!response.ok) throw new Error("Error al cargar el inventario");
+
     return await response.json();
   } catch (error) {
     console.error("Error en StockService: ", error);
     throw error;
   }
 }
+

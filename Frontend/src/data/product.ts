@@ -6,9 +6,14 @@ export type Product = {
   nombre: string;
   detalle?: string;
 
-  stockCritico: number;
   cantidadInventario: number;
-
-  ubicacionId: number;
+  stockCritico: number;
   activo: boolean;
+
+  ubicacionResourceId: string;
+
+  codigoBodega: string;
+  bodega: string;
+  pasillo: string;
+  estante: string;
 };

@@ -34,42 +34,42 @@ export default function ClientForm() {
   const [loading, setLoading] = useState(isEdit);
 
   useEffect(() => {
-  async function load() {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const clientes = await getClientes();
-
-      const found = clientes.find(
-        (c) => c.clienteResourceId === id
-      );
-
-      if (!found) {
-        navigate("/clients");
+    async function load() {
+      if (!id) {
+        setLoading(false);
         return;
       }
 
-      setForm({
-        nombre: found.nombre,
-        rolCliente: found.rolCliente,
-        telefono: found.telefono ?? "",
-        correo: found.correo ?? "",
-        direccion: found.direccion ?? "",
-        activo: found.activo,
-      });
-    } catch (error) {
-      console.error("Error cargando cliente:", error);
-      navigate("/clients");
-    } finally {
-      setLoading(false);
-    }
-  }
+      try {
+        const clientes = await getClientes();
 
-  void load();
-}, [id, navigate]);
+        const found = clientes.find(
+          (c) => c.clienteResourceId === id
+        );
+
+        if (!found) {
+          navigate("/clients");
+          return;
+        }
+
+        setForm({
+          nombre: found.nombre,
+          rolCliente: found.rolCliente,
+          telefono: found.telefono ?? "",
+          correo: found.correo ?? "",
+          direccion: found.direccion ?? "",
+          activo: found.activo,
+        });
+      } catch (error) {
+        console.error("Error cargando cliente:", error);
+        navigate("/clients");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void load();
+  }, [id, navigate]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -86,23 +86,23 @@ export default function ClientForm() {
   };
 
   const handleSubmit = async (
-  e: React.FormEvent
-) => {
-  e.preventDefault();
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
 
-  try {
-    if (isEdit && id) {
-      await updateCliente(id, form);
-    } else {
-      await createCliente(form);
+    try {
+      if (isEdit && id) {
+        await updateCliente(id, form);
+      } else {
+        await createCliente(form);
+      }
+
+      navigate("/clients");
+    } catch (error) {
+      console.error(error);
+      alert("Ocurrió un error al guardar el cliente.");
     }
-
-    navigate("/clients");
-  } catch (error) {
-    console.error(error);
-    alert("Ocurrió un error al guardar el cliente.");
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -162,21 +162,23 @@ export default function ClientForm() {
             </select>
           </div>
 
-          <div className="flex items-end">
-            <label className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50">
-              <span className="text-sm font-semibold text-slate-600">
-                Cliente activo
-              </span>
+          {isEdit && (
+            <div className="flex items-end">
+              <label className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50">
+                <span className="text-sm font-semibold text-slate-600">
+                  Cliente activo
+                </span>
 
-              <input
-                type="checkbox"
-                name="activo"
-                checked={form.activo}
-                onChange={handleChange}
-                className="h-5 w-5 accent-cyan-600 cursor-pointer"
-              />
-            </label>
-          </div>
+                <input
+                  type="checkbox"
+                  name="activo"
+                  checked={form.activo}
+                  onChange={handleChange}
+                  className="h-5 w-5 accent-cyan-600 cursor-pointer"
+                />
+              </label>
+            </div>
+          )}
 
           <div>
             <label className="text-sm font-semibold text-slate-600">
