@@ -36,6 +36,22 @@ INSERT INTO USUARIO (
 ('admin04', 'Fernanda', 'Lopez Ruiz', 'fernanda.lopez@sgid.test', "PASSWORDHASH", 1),
 ('operario06', 'Esteban', 'Castro Arias', 'esteban.castro@sgid.test',"PASSWORDHASH" , 1);
 
+UPDATE USUARIO
+SET ContrasenaHash = '$2a$11$l6w2fI6jAPhEoRs.Y3zhvO8S7QdtJauybJgGkB/xhIe.SIxglMxW.'
+WHERE NombreUsuario IN (
+    'admin01',
+    'admin02',
+    'admin03',
+    'operario01',
+    'operario02',
+    'supervisor01',
+    'operario03',
+    'operario04',
+    'supervisor02',
+    'operario05',
+    'admin04',
+    'operario06'
+);
 
 SET @RolAdmin = (
     SELECT RolUsuarioId
