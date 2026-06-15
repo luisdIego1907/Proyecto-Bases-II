@@ -8,11 +8,12 @@ import Header from "./shared/Header";
 
 import Home from "./features/home/Home";
 import LoginForm from "./features/login/Login";
-import ProductList from "./features/ProductList";
+import ProductList from "./features/pages/ProductList";
 import ClientForm from "./components/forms/ClientForm";
 import ProductForm from "./components/forms/ProductForm";
 import InventoryList from "./features/pages/InventoryList";
 import ClientList from "./features/pages/ClientList";
+import ReceptionForm from "./components/forms/ReceptionForm";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -32,10 +33,9 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-            {/* Public route */}
+        
             <Route path="/login" element={<LoginForm />} />
 
-            {/* Home */}
             <Route
               path="/"
               element={
@@ -45,7 +45,6 @@ function App() {
               }
             />
 
-            {/* Clients */}
             <Route
               path="/clients"
               element={
@@ -73,7 +72,6 @@ function App() {
               }
             />
 
-            {/* Products */}
             <Route
               path="/products"
               element={
@@ -92,7 +90,21 @@ function App() {
               }
             />
 
-            {/* Inventory */}
+            <Route
+              path="/products/:id"
+              element={
+                <ProtectedRoute>
+                  <ProductForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/products/:id/reception"
+              element={<ReceptionForm />}
+            />
+
+    
             <Route
               path="/inventory"
               element={
