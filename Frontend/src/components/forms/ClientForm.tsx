@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { ClientListItem } from "../../data/client";
-import { getClientes } from "../../services/ClientService";
+
+import {
+  getClientes,
+  updateCliente,
+  createCliente,
+} from "../../services/ClientService";
 
 type ClientFormData = {
   nombre: string;
-  rol_cliente: "ORIGEN" | "DESTINO" | "AMBOS";
+  rolCliente: "ORIGEN" | "DESTINO" | "AMBOS";
   telefono: string;
   correo: string;
   direccion: string;
@@ -20,7 +24,7 @@ export default function ClientForm() {
 
   const [form, setForm] = useState<ClientFormData>({
     nombre: "",
-    rol_cliente: "ORIGEN",
+    rolCliente: "ORIGEN",
     telefono: "",
     correo: "",
     direccion: "",
@@ -31,26 +35,37 @@ export default function ClientForm() {
 
   useEffect(() => {
     async function load() {
-      if (!id) return;
-
-      const clients: ClientListItem[] = await getClientes();
-      const found = clients.find((c) => c.clienteResourceId === id);
-
-      if (!found) {
-        navigate("/clients");
+      if (!id) {
+        setLoading(false);
         return;
       }
 
-      setForm({
-        nombre: found.nombre,
-        rol_cliente: found.rol_cliente,
-        telefono: found.telefono ?? "",
-        correo: found.correo ?? "",
-        direccion: found.direccion ?? "",
-        activo: found.activo,
-      });
+      try {
+        const clientes = await getClientes();
 
-      setLoading(false);
+        const found = clientes.find(
+          (c) => c.clienteResourceId === id
+        );
+
+        if (!found) {
+          navigate("/clients");
+          return;
+        }
+
+        setForm({
+          nombre: found.nombre,
+          rolCliente: found.rolCliente,
+          telefono: found.telefono ?? "",
+          correo: found.correo ?? "",
+          direccion: found.direccion ?? "",
+          activo: found.activo,
+        });
+      } catch (error) {
+        console.error("Error cargando cliente:", error);
+        navigate("/clients");
+      } finally {
+        setLoading(false);
+      }
     }
 
     void load();
@@ -70,12 +85,23 @@ export default function ClientForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
-    console.log(isEdit ? "EDITAR CLIENTE" : "CREAR CLIENTE", form);
+    try {
+      if (isEdit && id) {
+        await updateCliente(id, form);
+      } else {
+        await createCliente(form);
+      }
 
-    navigate("/clients");
+      navigate("/clients");
+    } catch (error) {
+      console.error(error);
+      alert("Ocurrió un error al guardar el cliente.");
+    }
   };
 
   if (loading) {
@@ -124,8 +150,8 @@ export default function ClientForm() {
               Tipo de cliente
             </label>
             <select
-              name="rol_cliente"
-              value={form.rol_cliente}
+              name="rolCliente"
+              value={form.rolCliente}
               onChange={handleChange}
               className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
                          focus:outline-none focus:ring-2 focus:ring-cyan-300"
@@ -136,21 +162,23 @@ export default function ClientForm() {
             </select>
           </div>
 
-          <div className="flex items-end">
-            <label className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50">
-              <span className="text-sm font-semibold text-slate-600">
-                Cliente activo
-              </span>
+          {isEdit && (
+            <div className="flex items-end">
+              <label className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50">
+                <span className="text-sm font-semibold text-slate-600">
+                  Cliente activo
+                </span>
 
-              <input
-                type="checkbox"
-                name="activo"
-                checked={form.activo}
-                onChange={handleChange}
-                className="h-5 w-5 accent-cyan-600 cursor-pointer"
-              />
-            </label>
-          </div>
+                <input
+                  type="checkbox"
+                  name="activo"
+                  checked={form.activo}
+                  onChange={handleChange}
+                  className="h-5 w-5 accent-cyan-600 cursor-pointer"
+                />
+              </label>
+            </div>
+          )}
 
           <div>
             <label className="text-sm font-semibold text-slate-600">

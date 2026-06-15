@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { Product } from "../data/product";
-import ProductTable from "./ProductTable";
+import type { Product } from "../../data/product";
+import ProductTable from "../../components/Tables/ProductTable";
 
 import {
   getProducts,
   deleteProduct,
-} from "../services/ProductService";
+  getProductById,
+} from "../../services/ProductService";
 
-import DeleteButton from "../shared/DeleteButton";
+import DeleteButton from "../../shared/DeleteButton";
 
 export default function ProductList() {
   const navigate = useNavigate();
@@ -26,8 +27,15 @@ export default function ProductList() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const data = await getProducts();
-        setProductList(data);
+        const inventoryProducts = await getProducts();
+
+        const completeProducts = await Promise.all(
+          inventoryProducts.map((p) =>
+            getProductById(p.productoId)
+          )
+        );
+
+        setProductList(completeProducts);
       } catch (err) {
         console.error(err);
         setError("No se pudieron cargar los productos.");
@@ -39,7 +47,7 @@ export default function ProductList() {
     void loadProducts();
   }, []);
 
-  const handleSelectProduct = (id: number) => {
+  const handleSelectCheckbox = (id: number) => {
     setSuccessMessage("");
 
     setSelectedProducts((prev) =>
@@ -56,20 +64,32 @@ export default function ProductList() {
       setSuccessMessage("");
       setDeleteError("");
 
+      const productsToDelete = productList.filter((p) =>
+        selectedProducts.includes(p.productoId)
+      );
+
       await Promise.all(
-        selectedProducts.map((id) => deleteProduct(id))
+        productsToDelete.map((p) =>
+          deleteProduct(p.productoResourceId)
+        )
       );
 
       setProductList((prev) =>
-        prev.filter((p) => !selectedProducts.includes(p.productoId))
+        prev.filter(
+          (p) => !selectedProducts.includes(p.productoId)
+        )
       );
 
       setSelectedProducts([]);
 
-      setSuccessMessage("Producto(s) eliminado(s) correctamente.");
+      setSuccessMessage(
+        "Producto(s) eliminado(s) correctamente."
+      );
     } catch (err) {
       console.error(err);
-      setDeleteError("No se pudieron eliminar los productos.");
+      setDeleteError(
+        "No se pudieron eliminar los productos."
+      );
     }
   };
 
@@ -89,7 +109,7 @@ export default function ProductList() {
       <div className="flex justify-center py-24">
         <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
           <h2 className="text-xl font-semibold text-red-700">
-            No se pudieron cargar los productos
+            {error}
           </h2>
         </div>
       </div>
@@ -98,12 +118,12 @@ export default function ProductList() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">
             Lista de Productos
           </h1>
+
           <p className="text-slate-500 mt-1">
             Gestiona los productos del sistema
           </p>
@@ -157,8 +177,11 @@ export default function ProductList() {
         <ProductTable
           products={productList}
           selectedProducts={selectedProducts}
-          onSelect={handleSelectProduct}
+          onSelect={handleSelectCheckbox}
           onEdit={(id) => navigate(`/products/${id}`)}
+          onSelectProduct={(id) =>
+            navigate(`/products/${id}/reception`)
+          }
         />
       )}
     </div>
