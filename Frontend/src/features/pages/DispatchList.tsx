@@ -9,6 +9,7 @@ import DispatchDetailModal from "../../components/dispatch/DispatchDetailModal";
 
 import { getDispatches } from "../../services/DispatchService";
 import { getDispatchDetails } from "../../services/DespachoService";
+import { useNavigate } from "react-router-dom";
 
 export default function DispatchList() {
   // Lista principal
@@ -26,6 +27,7 @@ export default function DispatchList() {
   const [dispatchDetails, setDispatchDetails] = useState<DispatchDetail[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate();
   async function handleViewDetail(dispatchId: number) {
     try {
       const details = await getDispatchDetails(dispatchId);
@@ -99,7 +101,10 @@ export default function DispatchList() {
           </p>
         </div>
 
-        <button className="rounded-xl bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-700">
+        <button
+          onClick={() => navigate("/dispatch/create")}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-3 rounded-xl font-medium"
+        >
           Registrar despacho
         </button>
       </div>
