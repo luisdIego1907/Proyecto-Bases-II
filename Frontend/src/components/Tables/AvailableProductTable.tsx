@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Product } from "../../data/product";
 import type { InventarioData } from "../../data/Stock";
 
 interface Props {
@@ -20,6 +19,19 @@ export default function AvailableProductsTable({
     }));
   }
 
+  function handleAdd(productId: number) {
+    const quantity = quantities[productId];
+
+    if (!quantity || quantity <= 0) return;
+
+    onAddProduct(productId, quantity);
+
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: 0,
+    }));
+  }
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200">
       <table className="min-w-full text-sm">
@@ -37,7 +49,7 @@ export default function AvailableProductsTable({
           {products.map((product) => (
             <tr
               key={product.productoId}
-              className="hover:bg-slate-50 transition"
+              className="transition hover:bg-slate-50"
             >
               <td className="px-6 py-4">{product.codigo}</td>
 
@@ -60,13 +72,12 @@ export default function AvailableProductsTable({
 
               <td className="px-6 py-4">
                 <button
-                  onClick={() =>
-                    onAddProduct(
-                      product.productoId,
-                      quantities[product.productoId] || 1,
-                    )
+                  onClick={() => handleAdd(product.productoId)}
+                  disabled={
+                    !quantities[product.productoId] ||
+                    quantities[product.productoId] <= 0
                   }
-                  className="rounded-lg bg-cyan-600 px-3 py-2 text-white hover:bg-cyan-700 transition"
+                  className="rounded-lg bg-cyan-600 px-3 py-2 text-white transition hover:bg-cyan-700 disabled:bg-gray-400"
                 >
                   Agregar
                 </button>

@@ -1,6 +1,7 @@
 import { config } from "../config";
 import type { InventarioData } from "../data/Stock";
 import type { Product } from "../data/product";
+import { apiClient } from "./apiClient";
 
 const URL_API = `${config.api.url}/api/productos`;
 
@@ -14,9 +15,7 @@ export async function getProducts(): Promise<Product[]> {
   return await response.json();
 }
 
-export async function getProductById(
-  productoId: number
-): Promise<Product> {
+export async function getProductById(productoId: number): Promise<Product> {
   const response = await fetch(`${URL_API}/${productoId}`);
 
   if (!response.ok) {
@@ -26,32 +25,25 @@ export async function getProductById(
   return await response.json();
 }
 
-export async function deleteProduct(
-  productoResourceId: string
-): Promise<void> {
-  const response = await fetch(
-    `${URL_API}/${productoResourceId}`,
-    {
-      method: "DELETE",
-    }
-  );
+export async function deleteProduct(productoResourceId: string): Promise<void> {
+  const response = await fetch(`${URL_API}/${productoResourceId}`, {
+    method: "DELETE",
+  });
 
   if (!response.ok) {
     throw new Error("Error al eliminar producto");
   }
 }
 
-export async function createProduct(
-  product: {
-    codigo: string;
-    nombre: string;
-    detalle?: string;
-    stockCritico: number;
-    bodega: string;
-    pasillo: string;
-    estante: string;
-  }
-): Promise<void> {
+export async function createProduct(product: {
+  codigo: string;
+  nombre: string;
+  detalle?: string;
+  stockCritico: number;
+  bodega: string;
+  pasillo: string;
+  estante: string;
+}): Promise<void> {
   const response = await fetch(URL_API, {
     method: "POST",
     headers: {
@@ -73,23 +65,18 @@ export async function createProduct(
   }
 }
 
-export async function updateProduct(
-  product: Product
-): Promise<void> {
-  const response = await fetch(
-    `${URL_API}/${product.productoResourceId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        nombre: product.nombre,
-        stockCritico: product.stockCritico,
-        ubicacionResourceId: product.ubicacionResourceId,
-      }),
-    }
-  );
+export async function updateProduct(product: Product): Promise<void> {
+  const response = await fetch(`${URL_API}/${product.productoResourceId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      nombre: product.nombre,
+      stockCritico: product.stockCritico,
+      ubicacionResourceId: product.ubicacionResourceId,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("Error al actualizar producto");
@@ -99,14 +86,9 @@ export async function updateProduct(
 //Funcion listar inventario, conecta directo al backend esta lista para no hacerlo despues
 export async function getInventory(): Promise<InventarioData[]> {
   try {
-    const response = await fetch(URL_API + "/inventario");
-
-    if (!response.ok) throw new Error("Error al cargar el inventario");
-
-    return await response.json();
+    return await apiClient<InventarioData[]>(`${URL_API}/inventario`);
   } catch (error) {
-    console.error("Error en StockService: ", error);
+    console.error("Error en StockService:", error);
     throw error;
   }
 }
-

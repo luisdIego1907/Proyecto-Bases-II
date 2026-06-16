@@ -1,10 +1,14 @@
+import type { ClientListItem } from "../../data/client";
+
 interface Props {
-  selectedClient: string;
-  onChange: (value: string) => void;
+  clients: ClientListItem[];
+  selectedClient: number | null;
+  onChange: (value: number | null) => void;
   onCreate: () => void;
 }
 
 export default function ClientSelector({
+  clients,
   selectedClient,
   onChange,
   onCreate,
@@ -17,16 +21,19 @@ export default function ClientSelector({
         </label>
 
         <select
-          value={selectedClient}
-          onChange={(e) => onChange(e.target.value)}
+          value={selectedClient ?? ""}
+          onChange={(e) =>
+            onChange(e.target.value ? Number(e.target.value) : null)
+          }
           className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-cyan-500"
         >
           <option value="">Seleccione un cliente</option>
 
-          {/* Mock temporal */}
-          <option value="1">Empresa ABC</option>
-          <option value="2">Cliente XYZ</option>
-          <option value="3">Tech Solutions</option>
+          {clients.map((client) => (
+            <option key={client.clienteId} value={client.clienteId}>
+              {client.nombre}
+            </option>
+          ))}
         </select>
       </div>
 
