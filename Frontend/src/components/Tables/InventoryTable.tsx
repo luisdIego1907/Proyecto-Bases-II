@@ -1,22 +1,38 @@
+import type { InventarioData } from "../../data/Stock";
+
 type Props = {
-  products: any[];
+  products: InventarioData[];
 };
 
 export default function InventoryTable({ products }: Props) {
+  function formatDate(date?: string) {
+    if (!date) return "—";
+
+    return new Date(date).toLocaleDateString();
+  }
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
       <table className="min-w-full text-sm">
-        <thead>
-          <tr className="bg-slate-50 text-slate-600">
+        <thead className="bg-slate-50 text-slate-600">
+          <tr>
             <th className="px-6 py-4 text-left font-semibold">Código</th>
 
             <th className="px-6 py-4 text-left font-semibold">Producto</th>
 
             <th className="px-6 py-4 text-left font-semibold">Ubicación</th>
 
-            <th className="px-6 py-4 text-left font-semibold">Stock</th>
+            <th className="px-6 py-4 text-left font-semibold">Existencias</th>
 
             <th className="px-6 py-4 text-left font-semibold">Estado</th>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Último ingreso
+            </th>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Último despacho
+            </th>
           </tr>
         </thead>
 
@@ -24,7 +40,7 @@ export default function InventoryTable({ products }: Props) {
           {products.map((product) => (
             <tr
               key={product.productoId}
-              className="hover:bg-slate-50 transition"
+              className="transition hover:bg-slate-50"
             >
               <td className="px-6 py-4 font-medium text-slate-800">
                 {product.codigo}
@@ -36,20 +52,28 @@ export default function InventoryTable({ products }: Props) {
                 {product.bodega} / {product.pasillo} / {product.estante}
               </td>
 
-              <td className="px-6 py-4 text-slate-600">
+              <td className="px-6 py-4 font-medium text-slate-700">
                 {product.cantidadInventario}
               </td>
 
-              <td className="px-6 py-4 text-slate-600">
+              <td className="px-6 py-4">
                 {product.estadoStock === "REORDEN" ? (
-                  <span className="bg-red-500 text-white py-1 px-2 rounded-full text-xs">
+                  <span className="rounded-full bg-red-500 px-3 py-1 text-xs text-white">
                     Bajo stock
                   </span>
                 ) : (
-                  <span className="bg-green-500 text-white py-1 px-2 rounded-full text-xs">
+                  <span className="rounded-full bg-green-500 px-3 py-1 text-xs text-white">
                     Disponible
                   </span>
                 )}
+              </td>
+
+              <td className="px-6 py-4 text-slate-600">
+                {formatDate(product.ultimoIngreso)}
+              </td>
+
+              <td className="px-6 py-4 text-slate-600">
+                {formatDate(product.ultimoDespacho)}
               </td>
             </tr>
           ))}
