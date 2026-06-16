@@ -13,6 +13,8 @@ import ClientForm from "./components/forms/ClientForm";
 import ProductForm from "./components/forms/ProductForm";
 import InventoryList from "./features/pages/InventoryList";
 import ClientList from "./features/pages/ClientList";
+import DispatchList from "./features/pages/DispatchList";
+import CreateDispatch from "./components/forms/CreateDispatchForm";
 import ReceptionForm from "./components/forms/ReceptionForm";
 
 function App() {
@@ -110,6 +112,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <InventoryList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/dispatch"
+              element={
+                <ProtectedRoute>
+                  <DispatchList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/dispatch/create"
+              element={
+                <ProtectedRoute>
+                  <CreateDispatch />
                 </ProtectedRoute>
               }
             />

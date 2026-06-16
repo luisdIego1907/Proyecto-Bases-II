@@ -10,6 +10,7 @@ import {
   LogOut,
   User,
   Clipboard,
+  Boxes,
 } from "lucide-react";
 
 import { isAuthenticated, clearSession } from "../auth/sessionAuth";
@@ -31,6 +32,7 @@ export default function Header() {
     { name: "Clientes", icon: <Users size={18} />, to: "/clients" },
     { name: "Recepción de Mercancía", icon: <Box size={18} />, to: "/products" },
     { name: "Inventario", icon: <Clipboard size={18} />, to: "/inventory" },
+    { name: "Despacho", icon: <Boxes size={18} />, to: "/dispatch" },
   ];
 
   const handleLogout = () => {
