@@ -33,7 +33,7 @@ export default function AvailableProductsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200">
+    <div className="max-h-[500px] overflow-y-auto overflow-x-auto rounded-2xl border border-slate-200">
       <table className="min-w-full text-sm">
         <thead className="bg-slate-50 text-slate-600">
           <tr>
