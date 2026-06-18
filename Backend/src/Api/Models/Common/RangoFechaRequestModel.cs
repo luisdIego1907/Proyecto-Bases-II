@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Api.Models.Common;
 
 public class RangoFechaRequestModel
 {
-    
-     [Required]
+
+    [Required]
     public DateTime FechaInicio { get; set; }
 
     [Required]

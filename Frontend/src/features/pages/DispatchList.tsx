@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { DispatchSummary } from "../../data/dispatch/DispatchResponses";
-import type { DispatchDetail } from "../../data/dispatch/DispatchDetailResponse";
+import type {
+  DispatchDetail,
+  DispatchSummary,
+} from "../../data/dispatch/DispatchResponses";
 import DispatchTable from "../../components/Tables/DispatchTable";
 import DispatchFilter from "../../components/dispatch/DispatchFilter";
 import DispatchDetailModal from "../../components/dispatch/DispatchDetailModal";
@@ -10,7 +12,9 @@ import DispatchDetailModal from "../../components/dispatch/DispatchDetailModal";
 import {
   getDispatches,
   getDispatchDetails,
+  filterDispatches,
 } from "../../services/DispatchService";
+import FeedbackModal from "../../shared/FeedbackModal";
 
 export default function DispatchList() {
   // Lista principal de despachos
@@ -30,6 +34,20 @@ export default function DispatchList() {
 
   const navigate = useNavigate();
 
+  const [modal, setModal] = useState({
+    open: false,
+    type: "success" as "success" | "error" | "warning",
+    message: "",
+  });
+
+  function showMessage(type: "success" | "error" | "warning", message: string) {
+    setModal({
+      open: true,
+      type,
+      message,
+    });
+  }
+
   async function handleViewDetail(dispatchId: number) {
     try {
       const dispatchDetail = await getDispatchDetails(dispatchId);
@@ -44,16 +62,53 @@ export default function DispatchList() {
 
   function handleCloseModal() {
     setIsModalOpen(false);
+    setDispatchDetails([]);
   }
 
   // Temporal hasta conectar backend
-  function handleFilter() {
-    console.log("Filtro pendiente de conectar");
+  async function handleFilter() {
+    if (!startDate || !endDate) {
+      showMessage("warning", "Debe seleccionar ambas fechas");
+      return;
+    }
+
+    //La fecha en que empieza no se puede ser mayor a la final
+    if (new Date(startDate) > new Date(endDate)) {
+      showMessage("warning", "La fecha de inicio no puede mayor a la final");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await filterDispatches({
+        fechaInicio: `${startDate}T00:00:00`,
+        fechaFin: `${endDate}T23:59:59`,
+      });
+
+      setDispatches(data);
+    } catch (error) {
+      console.error(error);
+      showMessage("error", "No se pudo aplicar el filtro");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleClear() {
+  async function handleClear() {
     setStartDate("");
     setEndDate("");
+
+    try {
+      setLoading(true);
+      const data = await getDispatches();
+
+      setDispatches(data);
+    } catch (error) {
+      console.error(error);
+      showMessage("error", "No se pudo cargar la informaciòn");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -152,6 +207,18 @@ export default function DispatchList() {
         details={dispatchDetails}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+      />
+
+      <FeedbackModal
+        isOpen={modal.open}
+        type={modal.type}
+        message={modal.message}
+        onClose={() =>
+          setModal((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
       />
     </div>
   );

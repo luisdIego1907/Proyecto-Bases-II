@@ -5,7 +5,7 @@ namespace Api.Mappers;
 
 public static class CommonApiMapper
 {
-     public static RangoFechaRequestDto ToDto(RangoFechaRequestModel model)
+    public static RangoFechaRequestDto ToDto(RangoFechaRequestModel model)
     {
         return new RangoFechaRequestDto
         {

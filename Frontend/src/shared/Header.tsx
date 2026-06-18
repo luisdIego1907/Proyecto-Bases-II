@@ -11,6 +11,7 @@ import {
   User,
   Clipboard,
   Boxes,
+  Logs,
 } from "lucide-react";
 
 import { isAuthenticated, clearSession } from "../auth/sessionAuth";
@@ -30,9 +31,14 @@ export default function Header() {
   const links = [
     { name: "Inicio", icon: <House size={18} />, to: "/" },
     { name: "Clientes", icon: <Users size={18} />, to: "/clients" },
-    { name: "Recepción de Mercancía", icon: <Box size={18} />, to: "/products" },
+    {
+      name: "Recepción de Mercancía",
+      icon: <Box size={18} />,
+      to: "/products",
+    },
     { name: "Inventario", icon: <Clipboard size={18} />, to: "/inventory" },
     { name: "Despacho", icon: <Boxes size={18} />, to: "/dispatch" },
+    { name: "Auditorias", icon: <Logs size={18} />, to: "/audit" },
   ];
 
   const handleLogout = () => {

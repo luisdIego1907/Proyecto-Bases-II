@@ -15,6 +15,7 @@ import {
   createDispatch,
   processDispatch,
 } from "../../services/DispatchService";
+import FeedbackModal from "../../shared/FeedbackModal";
 
 export default function CreateDispatch() {
   const [clients, setClients] = useState<ClientListItem[]>([]);
@@ -29,6 +30,20 @@ export default function CreateDispatch() {
   const [loading, setLoading] = useState(true);
   const [creatingDispatch, setCreatingDispatch] = useState(false);
   const [processingDispatch, setProcessingDispatch] = useState(false);
+  const [modal, setModal] = useState({
+    open: false,
+    type: "success" as "success" | "error" | "warning",
+    message: "",
+  });
+
+  //Funcion para mostrar el mensaje del herlper
+  function showMessage(type: "success" | "error" | "warning", message: string) {
+    setModal({
+      open: true,
+      type,
+      message,
+    });
+  }
 
   async function loadInitialData() {
     try {
@@ -63,7 +78,7 @@ export default function CreateDispatch() {
 
   async function handleCreateDispatch() {
     if (!selectedClient) {
-      alert("Debe seleccionar un cliente");
+      showMessage("warning", "Debe seleccionar un cliente");
       return;
     }
 
@@ -80,12 +95,12 @@ export default function CreateDispatch() {
       setDispatchId(response.despachoId);
       setDispatchCreated(true);
 
-      alert(response.mensaje);
+      showMessage("success", response.mensaje);
     } catch (error) {
       console.log(error);
 
       if (error instanceof Error) {
-        alert(error.message);
+        showMessage("error", error.message);
       }
     } finally {
       setCreatingDispatch(false);
@@ -94,7 +109,10 @@ export default function CreateDispatch() {
 
   async function handleAddProduct(productId: number, quantity: number) {
     if (!dispatchId) {
-      alert("Debe crear despacho primero");
+      showMessage(
+        "warning",
+        "Primero debe crear un despacho para poder seleccionar un producto",
+      );
       return;
     }
 
@@ -105,12 +123,12 @@ export default function CreateDispatch() {
     if (!product) return;
 
     if (quantity <= 0) {
-      alert("Ingrese una cantidad válida");
+      showMessage("warning", "Ingrese una cantidad valida");
       return;
     }
 
     if (quantity > product.cantidadInventario) {
-      alert("Stock insuficiente");
+      showMessage("warning", "No hay suficiente inventario");
       return;
     }
 
@@ -161,19 +179,19 @@ export default function CreateDispatch() {
       console.log(error);
 
       if (error instanceof Error) {
-        alert(error.message);
+        showMessage("error", error.message);
       }
     }
   }
 
   async function handleProcessDispatch() {
     if (!dispatchId) {
-      alert("No existe despacho");
+      showMessage("error", "No existe despacho");
       return;
     }
 
     if (cart.length === 0) {
-      alert("Debe agregar productos");
+      showMessage("error", "Debe agregar màs productos");
       return;
     }
 
@@ -187,7 +205,7 @@ export default function CreateDispatch() {
         usuarioId: 1,
       });
 
-      alert(response.mensaje);
+      showMessage("success", response.mensaje);
 
       await loadInitialData();
 
@@ -199,7 +217,7 @@ export default function CreateDispatch() {
       console.log(error);
 
       if (error instanceof Error) {
-        alert(error.message);
+        showMessage("error", error.message);
       }
     } finally {
       setProcessingDispatch(false);
@@ -259,6 +277,17 @@ export default function CreateDispatch() {
 
         <DispatchCart cart={cart} onProcess={handleProcessDispatch} />
       </div>
+      <FeedbackModal
+        isOpen={modal.open}
+        type={modal.type}
+        message={modal.message}
+        onClose={() =>
+          setModal((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
+      />
     </div>
   );
 }

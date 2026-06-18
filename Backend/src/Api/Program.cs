@@ -1,12 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
+using DomainService.Interfaces;
+using DomainService.Services;
+using Facade;
+using Facade.Interfaces;
 using Infrastructure;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
-using DomainService.Interfaces;
-using DomainService.Services;
-using Facade.Interfaces;
-using Facade;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
