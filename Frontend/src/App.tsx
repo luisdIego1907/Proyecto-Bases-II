@@ -16,6 +16,7 @@ import ClientList from "./features/pages/ClientList";
 import DispatchList from "./features/pages/DispatchList";
 import CreateDispatch from "./components/forms/CreateDispatchForm";
 import ReceptionForm from "./components/forms/ReceptionForm";
+import AuditPage from "./features/pages/AuditPage";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -35,7 +36,6 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-        
             <Route path="/login" element={<LoginForm />} />
 
             <Route
@@ -101,12 +101,8 @@ function App() {
               }
             />
 
-            <Route
-              path="/products/:id/reception"
-              element={<ReceptionForm />}
-            />
+            <Route path="/products/:id/reception" element={<ReceptionForm />} />
 
-    
             <Route
               path="/inventory"
               element={
@@ -130,6 +126,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateDispatch />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/audit"
+              element={
+                <ProtectedRoute>
+                  <AuditPage />
                 </ProtectedRoute>
               }
             />
