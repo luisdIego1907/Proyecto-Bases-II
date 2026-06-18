@@ -41,6 +41,11 @@ export default function AuditPage() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  // Producto seleccionado (para resumen)
+  const selectedProduct = products.find(
+    (product) => product.productoId === productId,
+  );
+
   // Cargar inventario al entrar
   useEffect(() => {
     async function loadProducts() {
@@ -104,18 +109,18 @@ export default function AuditPage() {
   return (
     <div className="container mx-auto px-6 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">
+      <div className="mb-5">
+        <h1 className="text-2xl font-bold text-slate-800">
           Auditoría y Trazabilidad
         </h1>
 
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-sm text-slate-500">
           Consulte movimientos y auditoría histórica de productos
         </p>
       </div>
 
       {/* Filtro */}
-      <div className="mb-8">
+      <div className="mb-6">
         <AuditFilter
           products={products}
           selectedProduct={productId}
@@ -133,17 +138,47 @@ export default function AuditPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="py-10 text-center text-slate-500">
-          Consultando información...
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-cyan-600 border-t-transparent" />
+
+          <p className="mt-4 text-slate-500">Consultando información...</p>
         </div>
       )}
 
       {/* Resultados */}
       {!loading && searched && (
-        <div className="space-y-8">
-          <MovementTable movements={movements} />
+        <div className="space-y-6">
+          {/* Resumen */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h3 className="mb-2 font-semibold text-slate-700">
+              Resultado de búsqueda
+            </h3>
 
-          <AuditTable audits={audits} />
+            <div className="space-y-1 text-sm text-slate-600">
+              <p>
+                Producto:{" "}
+                <span className="font-medium">
+                  {selectedProduct?.nombre ?? "No disponible"}
+                </span>
+              </p>
+
+              <p>
+                Movimientos encontrados:{" "}
+                <span className="font-medium">{movements.length}</span>
+              </p>
+
+              <p>
+                Registros de auditoría:{" "}
+                <span className="font-medium">{audits.length}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Tabla movimientos */}
+          <MovementTable movements={movements} maxHeight="320px" />
+
+          {/* Tabla auditoría */}
+          <AuditTable audits={audits} maxHeight="320px" />
         </div>
       )}
     </div>

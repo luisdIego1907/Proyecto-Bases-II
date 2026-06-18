@@ -14,6 +14,7 @@ import {
   getDispatchDetails,
   filterDispatches,
 } from "../../services/DispatchService";
+import FeedbackModal from "../../shared/FeedbackModal";
 
 export default function DispatchList() {
   // Lista principal de despachos
@@ -32,6 +33,20 @@ export default function DispatchList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const [modal, setModal] = useState({
+    open: false,
+    type: "success" as "success" | "error" | "warning",
+    message: "",
+  });
+
+  function showMessage(type: "success" | "error" | "warning", message: string) {
+    setModal({
+      open: true,
+      type,
+      message,
+    });
+  }
 
   async function handleViewDetail(dispatchId: number) {
     try {
@@ -53,13 +68,13 @@ export default function DispatchList() {
   // Temporal hasta conectar backend
   async function handleFilter() {
     if (!startDate || !endDate) {
-      alert("Debe seleccionar ambas fechas");
+      showMessage("warning", "Debe seleccionar ambas fechas");
       return;
     }
 
     //La fecha en que empieza no se puede ser mayor a la final
     if (new Date(startDate) > new Date(endDate)) {
-      alert("La fecha inicial no puede ser mayor");
+      showMessage("warning", "La fecha de inicio no puede mayor a la final");
       return;
     }
 
@@ -73,7 +88,7 @@ export default function DispatchList() {
       setDispatches(data);
     } catch (error) {
       console.error(error);
-      alert("No se pudo aplicar el filtro");
+      showMessage("error", "No se pudo aplicar el filtro");
     } finally {
       setLoading(false);
     }
@@ -90,7 +105,7 @@ export default function DispatchList() {
       setDispatches(data);
     } catch (error) {
       console.error(error);
-      alert("No se pudo recargar la información");
+      showMessage("error", "No se pudo cargar la informaciòn");
     } finally {
       setLoading(false);
     }
@@ -192,6 +207,18 @@ export default function DispatchList() {
         details={dispatchDetails}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+      />
+
+      <FeedbackModal
+        isOpen={modal.open}
+        type={modal.type}
+        message={modal.message}
+        onClose={() =>
+          setModal((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
       />
     </div>
   );

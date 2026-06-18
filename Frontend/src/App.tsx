@@ -17,6 +17,7 @@ import DispatchList from "./features/pages/DispatchList";
 import CreateDispatch from "./components/forms/CreateDispatchForm";
 import ReceptionForm from "./components/forms/ReceptionForm";
 import AuditPage from "./features/pages/AuditPage";
+import NotFoundPage from "./shared/NotFoundPage";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -138,6 +139,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </div>

@@ -2,15 +2,19 @@ import type { ProductMovement } from "../../data/audit/ProductMovement";
 
 interface Props {
   movements: ProductMovement[];
+  maxHeight?: string;
 }
 
-export default function MovementTable({ movements }: Props) {
+export default function MovementTable({
+  movements,
+  maxHeight = "450px",
+}: Props) {
   function getRowStyle(tipoMovimiento: string) {
     if (tipoMovimiento.toUpperCase() === "RECEPCION") {
-      return "bg-blue-50";
+      return "bg-blue-50 hover:bg-blue-100";
     }
 
-    return "bg-orange-50";
+    return "bg-orange-50 hover:bg-orange-100";
   }
 
   return (
@@ -32,43 +36,54 @@ export default function MovementTable({ movements }: Props) {
           <p className="text-slate-400">No se encontraron movimientos</p>
         </div>
       ) : (
-        <div className="max-h-[450px] overflow-auto rounded-xl border border-slate-200">
-          <table className="min-w-full text-sm">
-            <thead className="sticky top-0 bg-slate-50 text-slate-600">
+        <div
+          style={{ maxHeight }}
+          className="overflow-y-auto rounded-xl border border-slate-200"
+        >
+          <table className="w-full text-sm">
+            {/* Header */}
+            <thead className="sticky top-0 z-10 bg-slate-50 text-slate-600 shadow-sm">
               <tr>
-                <th className="px-6 py-4 text-left font-semibold">Fecha</th>
+                <th className="px-4 py-3 text-left font-semibold">Fecha</th>
 
-                <th className="px-6 py-4 text-left font-semibold">Tipo</th>
+                <th className="px-4 py-3 text-left font-semibold">Tipo</th>
 
-                <th className="px-6 py-4 text-left font-semibold">Cliente</th>
+                <th className="px-4 py-3 text-left font-semibold">Cliente</th>
 
-                <th className="px-6 py-4 text-left font-semibold">Cantidad</th>
+                <th className="px-4 py-3 text-left font-semibold">Cantidad</th>
 
-                <th className="px-6 py-4 text-left font-semibold">Usuario</th>
+                <th className="px-4 py-3 text-left font-semibold">Usuario</th>
               </tr>
             </thead>
 
+            {/* Body */}
             <tbody className="divide-y divide-slate-100">
               {movements.map((movement, index) => (
                 <tr
                   key={index}
-                  className={`${getRowStyle(
+                  className={`transition ${getRowStyle(
                     movement.tipoMovimiento,
-                  )} hover:opacity-90 transition`}
+                  )}`}
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3 font-medium text-slate-800">
                     {new Date(movement.fecha).toLocaleDateString()}
                   </td>
 
-                  <td className="px-6 py-4 font-medium">
+                  <td className="px-4 py-3 font-medium text-slate-800">
                     {movement.tipoMovimiento}
                   </td>
 
-                  <td className="px-6 py-4">{movement.cliente}</td>
+                  <td className="px-4 py-3 text-slate-800">
+                    {movement.cliente}
+                  </td>
 
-                  <td className="px-6 py-4">{movement.cantidad}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">
+                    {movement.cantidad}
+                  </td>
 
-                  <td className="px-6 py-4">{movement.usuario}</td>
+                  <td className="px-4 py-3 text-slate-800">
+                    {movement.usuario}
+                  </td>
                 </tr>
               ))}
             </tbody>
