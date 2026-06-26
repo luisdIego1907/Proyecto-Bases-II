@@ -6,18 +6,18 @@ import type { ClientListItem } from "../../data/client";
 
 import { getProductById } from "../../services/ProductService";
 import { getClientes } from "../../services/ClientService";
+import { registrarRecepcion } from "../../services/ReceptionService";
 
 export default function ReceptionForm() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [clientes, setClientes] = useState<ClientListItem[]>([]);
+  const [clientes, setClientes] =useState<ClientListItem[]>([]);
 
   const [clienteId, setClienteId] = useState("");
   const [cantidad, setCantidad] = useState(1);
   const [lote, setLote] = useState("");
-  const [observaciones, setObservaciones] = useState("");
 
   const [loading, setLoading] = useState(true);
 
@@ -55,13 +55,15 @@ export default function ReceptionForm() {
   ) => {
     e.preventDefault();
 
+    if (!product) return;
+
     try {
-      console.log({
-        productoId: product?.productoId,
-        clienteId,
+      await registrarRecepcion({
+        productoId: product.productoId,
+        clienteId: Number(clienteId),
         cantidad,
-        lote,
-        observaciones,
+        numeroLote: lote,
+        usuarioId: 1, // Login simulado
       });
 
       alert("Recepción registrada correctamente");
@@ -84,12 +86,11 @@ export default function ReceptionForm() {
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Producto no encontrado.
+        Producto no encontrado
       </div>
     );
   }
-
-  return (
+    return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-6 py-10">
       <form
         onSubmit={handleSubmit}
@@ -135,9 +136,7 @@ export default function ReceptionForm() {
 
             <select
               value={clienteId}
-              onChange={(e) =>
-                setClienteId(e.target.value)
-              }
+              onChange={(e) => setClienteId(e.target.value)}
               className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
                          focus:outline-none focus:ring-2 focus:ring-emerald-300"
               required
@@ -149,7 +148,7 @@ export default function ReceptionForm() {
               {clientes.map((cliente) => (
                 <option
                   key={cliente.clienteResourceId}
-                  value={cliente.clienteResourceId}
+                  value={cliente.clienteId}
                 >
                   {cliente.nombre}
                 </option>
@@ -164,9 +163,7 @@ export default function ReceptionForm() {
 
             <input
               value={lote}
-              onChange={(e) =>
-                setLote(e.target.value)
-              }
+              onChange={(e) => setLote(e.target.value)}
               className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
                          focus:outline-none focus:ring-2 focus:ring-emerald-300"
               placeholder="Ej: LOT-2026-001"
@@ -183,29 +180,10 @@ export default function ReceptionForm() {
               type="number"
               min={1}
               value={cantidad}
-              onChange={(e) =>
-                setCantidad(Number(e.target.value))
-              }
+              onChange={(e) => setCantidad(Number(e.target.value))}
               className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
                          focus:outline-none focus:ring-2 focus:ring-emerald-300"
               required
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="text-sm font-semibold text-slate-600">
-              Observaciones
-            </label>
-
-            <textarea
-              rows={4}
-              value={observaciones}
-              onChange={(e) =>
-                setObservaciones(e.target.value)
-              }
-              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200
-                         focus:outline-none focus:ring-2 focus:ring-emerald-300"
-              placeholder="Observaciones adicionales..."
             />
           </div>
         </div>

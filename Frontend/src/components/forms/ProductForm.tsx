@@ -91,8 +91,8 @@ export default function ProductForm() {
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : type === "number"
-            ? Number(value)
-            : value,
+          ? Number(value)
+          : value,
     }));
   };
 
@@ -105,6 +105,9 @@ export default function ProductForm() {
           ...product,
           nombre: form.nombre,
           stockCritico: form.stockCritico,
+          bodega: form.bodega,
+          pasillo: form.pasillo,
+          estante: form.estante,
         });
       } else {
         await createProduct({
@@ -153,20 +156,22 @@ export default function ProductForm() {
           <div className="p-8 space-y-8">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Código
-                </label>
-                <input
-                  name="codigo"
-                  value={form.codigo}
-                  onChange={handleChange}
-                  disabled={isEdit}
-                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
-                />
-              </div>
 
-              <div>
+              {!isEdit && (
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Código
+                  </label>
+                  <input
+                    name="codigo"
+                    value={form.codigo}
+                    onChange={handleChange}
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                  />
+                </div>
+              )}
+
+              <div className={isEdit ? "md:col-span-2" : ""}>
                 <label className="text-sm font-medium text-slate-600">
                   Nombre
                 </label>
@@ -177,6 +182,7 @@ export default function ProductForm() {
                   className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
                 />
               </div>
+
             </div>
 
             <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
@@ -225,19 +231,22 @@ export default function ProductForm() {
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-slate-600">
-                Detalle
-              </label>
+            {!isEdit && (
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Detalle
+                </label>
 
-              <textarea
-                name="detalle"
-                value={form.detalle}
-                onChange={handleChange}
-                rows={4}
-                className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
-              />
-            </div>
+                <textarea
+                  name="detalle"
+                  value={form.detalle}
+                  onChange={handleChange}
+                  rows={4}
+                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                />
+              </div>
+            )}
+
           </div>
 
           <div className="px-8 py-6 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
