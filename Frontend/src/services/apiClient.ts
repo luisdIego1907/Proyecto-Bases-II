@@ -2,7 +2,6 @@ export async function apiClient<T>(
   url: string,
   options?: RequestInit,
 ): Promise<T> {
-  console.log("BODY ENVIADO:", options?.body);
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
@@ -12,11 +11,36 @@ export async function apiClient<T>(
   });
 
   if (!response.ok) {
-    const error = await response.text();
+    let errorMessage = "Ocurrió un error inesperado.";
 
-    console.log("ERROR BACKEND:", error);
+    try {
+      // Si el backend devuelve un JSON como:
+      // { "mensaje": "..." }
+      const errorData = await response.json();
 
-    throw new Error(error);
+      if (typeof errorData === "string") {
+        errorMessage = errorData;
+      } else if (
+        errorData &&
+        typeof errorData === "object" &&
+        "mensaje" in errorData
+      ) {
+        errorMessage = String(errorData.mensaje);
+      } else {
+        errorMessage = JSON.stringify(errorData);
+      }
+    } catch {
+      // Si no es JSON, intenta leerlo como texto
+      try {
+        errorMessage = await response.text();
+      } catch {
+        // Mantiene el mensaje por defecto
+      }
+    }
+
+    console.error("API Error:", errorMessage);
+
+    throw new Error(errorMessage);
   }
 
   if (response.status === 204) {

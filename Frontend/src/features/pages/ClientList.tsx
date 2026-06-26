@@ -58,16 +58,19 @@ export default function ClientList() {
       );
 
       setSelectedClients([]);
-      setSuccessMessage("Cliente(s) eliminado(s) correctamente.");
+      setSuccessMessage("Cliente(s) eliminado(s) correctamente");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "No se pudieron eliminar los clientes";
 
-      if (message.includes("permisos")) {
+      if (message.toLowerCase().includes("permisos")) {
         setPermissionDenied(true);
         return;
       }
 
-      setDeleteError("No se pudieron eliminar los clientes.");
+      setDeleteError(message);
     }
   };
 
@@ -98,7 +101,7 @@ export default function ClientList() {
     return (
       <PermissionDenied
         title="No puede eliminar clientes"
-        message="Su usuario puede consultar clientes, pero no tiene permisos para eliminarlos."
+        message="Su usuario puede consultar clientes, pero no tiene permisos para eliminarlos"
       />
     );
   }
