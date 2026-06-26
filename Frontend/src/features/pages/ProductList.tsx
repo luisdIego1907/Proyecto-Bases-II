@@ -168,7 +168,6 @@ export default function ProductList() {
       )}
     </div>
 
-    // Tabs
     <div className="mb-8 border-b border-slate-200">
       <div className="flex gap-8">
         <button
@@ -192,7 +191,7 @@ export default function ProductList() {
               : "text-slate-500 hover:text-slate-700"
           }`}
         >
-          Recepciones
+          Ver recepciones
         </button>
       </div>
     </div>
