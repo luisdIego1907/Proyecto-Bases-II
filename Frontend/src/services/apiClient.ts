@@ -1,7 +1,8 @@
 export async function apiClient<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
+  console.log("BODY ENVIADO:", options?.body);
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
@@ -11,9 +12,11 @@ export async function apiClient<T>(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Error ${response.status}: ${response.statusText}`
-    );
+    const error = await response.text();
+
+    console.log("ERROR BACKEND:", error);
+
+    throw new Error(error);
   }
 
   if (response.status === 204) {

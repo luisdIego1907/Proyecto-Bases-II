@@ -1,9 +1,13 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import type { Product } from "../../data/product";
-import { getProducts } from "../../services/ProductService";
+
+import {
+  getProductById,
+  createProduct,
+  updateProduct,
+} from "../../services/ProductService";
 
 type ProductFormData = {
   codigo: string;
@@ -12,6 +16,10 @@ type ProductFormData = {
   stockCritico: number;
   cantidadInventario: number;
   activo: boolean;
+
+  bodega: string;
+  pasillo: string;
+  estante: string;
 };
 
 export default function ProductForm() {
@@ -27,27 +35,27 @@ export default function ProductForm() {
     stockCritico: 0,
     cantidadInventario: 0,
     activo: true,
+
+    bodega: "",
+    pasillo: "",
+    estante: "",
   });
 
   const [loading, setLoading] = useState(isEdit);
 
+  const [product, setProduct] = useState<Product | null>(null);
+
   useEffect(() => {
     async function load() {
-      if (!id) return;
+      if (!id) {
+        setLoading(false);
+        return;
+      }
 
       try {
-        const products: Product[] = await getProducts();
+        const found = await getProductById(Number(id));
 
-        const found = products.find(
-          (p) =>
-            p.productoId === Number(id) ||
-            p.productoResourceId === id
-        );
-
-        if (!found) {
-          navigate("/products");
-          return;
-        }
+        setProduct(found);
 
         setForm({
           codigo: found.codigo,
@@ -56,7 +64,14 @@ export default function ProductForm() {
           stockCritico: found.stockCritico,
           cantidadInventario: found.cantidadInventario,
           activo: found.activo,
+
+          bodega: found.bodega ?? "",
+          pasillo: found.pasillo ?? "",
+          estante: found.estante ?? "",
         });
+      } catch (error) {
+        console.error(error);
+        navigate("/products");
       } finally {
         setLoading(false);
       }
@@ -66,9 +81,7 @@ export default function ProductForm() {
   }, [id, navigate]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
 
@@ -78,21 +91,41 @@ export default function ProductForm() {
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : type === "number"
-            ? Number(value)
-            : value,
+          ? Number(value)
+          : value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (isEdit) {
-      console.log("EDITAR PRODUCTO:", id, form);
-    } else {
-      console.log("CREAR PRODUCTO:", form);
-    }
+    try {
+      if (isEdit && product) {
+        await updateProduct({
+          ...product,
+          nombre: form.nombre,
+          stockCritico: form.stockCritico,
+          bodega: form.bodega,
+          pasillo: form.pasillo,
+          estante: form.estante,
+        });
+      } else {
+        await createProduct({
+          codigo: form.codigo,
+          nombre: form.nombre,
+          detalle: form.detalle,
+          stockCritico: form.stockCritico,
+          bodega: form.bodega,
+          pasillo: form.pasillo,
+          estante: form.estante,
+        });
+      }
 
-    navigate("/products");
+      navigate("/products");
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar el producto.");
+    }
   };
 
   if (loading) {
@@ -116,188 +149,118 @@ export default function ProductForm() {
             </h2>
 
             <p className="text-emerald-50 mt-2">
-              Administre la información del producto dentro del inventario.
+              Complete la información del producto
             </p>
           </div>
 
           <div className="p-8 space-y-8">
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Código
-                </label>
 
-                <input
-                  name="codigo"
-                  value={form.codigo}
-                  onChange={handleChange}
-                  className="mt-2
-                    w-full
-                    px-4
-                    py-3
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    focus:ring-2
-                    focus:ring-emerald-200
-                    focus:border-emerald-400
-                    focus:outline-none"
-                />
-              </div>
+              {!isEdit && (
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Código
+                  </label>
+                  <input
+                    name="codigo"
+                    value={form.codigo}
+                    onChange={handleChange}
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                  />
+                </div>
+              )}
 
-              <div>
+              <div className={isEdit ? "md:col-span-2" : ""}>
                 <label className="text-sm font-medium text-slate-600">
                   Nombre
                 </label>
-
                 <input
                   name="nombre"
                   value={form.nombre}
                   onChange={handleChange}
-                  className="
-                    mt-2
-                    w-full
-                    px-4
-                    py-3
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    focus:ring-2
-                    focus:ring-emerald-200
-                    focus:border-emerald-400
-                    focus:outline-none"
+                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
                 />
               </div>
+
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+              <label className="text-sm font-medium text-slate-600">
+                Stock crítico
+              </label>
+
+              <input
+                type="number"
+                name="stockCritico"
+                value={form.stockCritico}
+                onChange={handleChange}
+                className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+              />
             </div>
 
             <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
               <h3 className="font-semibold text-slate-700 mb-4">
-                Información de Inventario
+                Ubicación en almacén
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-medium text-slate-600">
-                    Stock crítico
-                  </label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <input
+                  name="bodega"
+                  value={form.bodega}
+                  onChange={handleChange}
+                  placeholder="Bodega"
+                  className="px-4 py-3 rounded-xl border border-slate-200"
+                />
 
-                  <input
-                    type="number"
-                    name="stockCritico"
-                    value={form.stockCritico}
-                    onChange={handleChange}
-                    className="
-                      mt-2
-                      w-full
-                      px-4
-                      py-3
-                      rounded-xl
-                      border
-                      border-slate-200
-                      bg-white
-                      focus:ring-2
-                      focus:ring-emerald-200
-                      focus:border-emerald-400
-                      focus:outline-none"
-                  />
-                </div>
+                <input
+                  name="pasillo"
+                  value={form.pasillo}
+                  onChange={handleChange}
+                  placeholder="Pasillo"
+                  className="px-4 py-3 rounded-xl border border-slate-200"
+                />
 
-                <div>
-                  <label className="text-sm font-medium text-slate-600">
-                    Cantidad inventario
-                  </label>
-
-                  <input
-                    type="number"
-                    name="cantidadInventario"
-                    value={form.cantidadInventario}
-                    onChange={handleChange}
-                    className="
-                      mt-2
-                      w-full
-                      px-4
-                      py-3
-                      rounded-xl
-                      border
-                      border-slate-200
-                      bg-white
-                      focus:ring-2
-                      focus:ring-emerald-200
-                      focus:border-emerald-400
-                      focus:outline-none"
-                  />
-                </div>
+                <input
+                  name="estante"
+                  value={form.estante}
+                  onChange={handleChange}
+                  placeholder="Estante"
+                  className="px-4 py-3 rounded-xl border border-slate-200"
+                />
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
-              <label className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-slate-700">
-                    Producto activo
-                  </p>
+            {!isEdit && (
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Detalle
+                </label>
 
-                </div>
-
-                <input
-                  type="checkbox"
-                  name="activo"
-                  checked={form.activo}
+                <textarea
+                  name="detalle"
+                  value={form.detalle}
                   onChange={handleChange}
-                  className="h-5 w-5 accent-emerald-600 cursor-pointer"
+                  rows={4}
+                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
                 />
-              </label>
-            </div>
+              </div>
+            )}
 
-            <div>
-              <label className="text-sm font-medium text-slate-600">
-                Detalle
-              </label>
-
-              <textarea
-                name="detalle"
-                value={form.detalle}
-                onChange={handleChange}
-                rows={4}
-                className="
-                  mt-2
-                  w-full
-                  px-4
-                  py-3
-                  rounded-xl
-                  border
-                  border-slate-200
-                  bg-white
-                  focus:ring-2
-                  focus:ring-emerald-200
-                  focus:border-emerald-400
-                  focus:outline-none"
-              />
-            </div>
           </div>
 
           <div className="px-8 py-6 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
             <button
               type="button"
               onClick={() => navigate("/products")}
-              className="px-6 py-3 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 transition"
+              className="px-6 py-3 rounded-xl border border-slate-300"
             >
               Cancelar
             </button>
 
             <button
               type="submit"
-              className="
-                px-6
-                py-3
-                rounded-xl
-                bg-emerald-500
-                hover:bg-emerald-600
-                text-white
-                font-semibold
-                transition"
+              className="px-6 py-3 rounded-xl bg-emerald-500 text-white font-semibold"
             >
               {isEdit ? "Actualizar Producto" : "Guardar Producto"}
             </button>
@@ -307,4 +270,3 @@ export default function ProductForm() {
     </div>
   );
 }
-

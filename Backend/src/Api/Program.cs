@@ -1,16 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
-using Infrastructure;
-using Infrastructure.Repositories;
-using Infrastructure.Repositories.Interfaces;
 using DomainService.Interfaces;
 using DomainService.Services;
-using Facade.Interfaces;
 using Facade;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Api.Security;
+using Facade.Interfaces;
+using Infrastructure;
+using Infrastructure.Repositories;
+using Infrastructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
