@@ -1,11 +1,14 @@
 using Api.Mappers;
 using Api.Models.Auditorias;
 using Api.Models.Common;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/auditoria-productos")]
 public class AuditoriaProductosController : ControllerBase
@@ -17,7 +20,7 @@ public class AuditoriaProductosController : ControllerBase
     {
         _auditoriaProductoFacade = auditoriaProductoFacade;
     }
-
+    [Authorize(Policy = AuthorizationPolicies.CanReadAudit)]
     [HttpPost("producto/{productoId:int}")]
     public async Task<ActionResult<IReadOnlyList<AuditoriaProductoResponseModel>>> ListarPorProducto(
         int productoId,
