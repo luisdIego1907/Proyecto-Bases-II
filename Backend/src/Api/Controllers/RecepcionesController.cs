@@ -1,10 +1,13 @@
 using Api.Mappers;
 using Api.Models.Recepciones;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/recepciones")]
 public class RecepcionesController : ControllerBase
@@ -16,6 +19,7 @@ public class RecepcionesController : ControllerBase
         _recepcionFacade = recepcionFacade;
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanCreateReceptions)]
     [HttpPost]
     public async Task<ActionResult<RegistrarRecepcionResponseModel>> Registrar(
         [FromBody] RegistrarRecepcionRequestModel request,
@@ -42,6 +46,7 @@ public class RecepcionesController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanReadReceptions)]
     [HttpGet("producto/{productoId:int}")]
     public async Task<ActionResult<IReadOnlyList<RecepcionProductoResponseModel>>> ListarPorProducto(
         int productoId,

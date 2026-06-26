@@ -1,11 +1,14 @@
 using Api.Mappers;
 using Api.Models.Common;
 using Api.Models.Productos;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/productos")]
 public class ProductosController : ControllerBase
@@ -17,6 +20,7 @@ public class ProductosController : ControllerBase
         _productoFacade = productoFacade;
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanReadProducts)]
     [HttpGet("inventario")]
     public async Task<ActionResult<IReadOnlyList<InventarioProductoResponseModel>>> ListarInventario(
         CancellationToken cancellationToken)
@@ -26,6 +30,7 @@ public class ProductosController : ControllerBase
         return Ok(inventario.Select(ProductoApiMapper.ToModel).ToList());
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanCreateProducts)]
     [HttpPost]
     public async Task<ActionResult<ProductoDetalleResponseModel>> Ingresar(
         [FromBody] IngresarProductoRequestModel request,
@@ -49,7 +54,7 @@ public class ProductosController : ControllerBase
             return BadRequest(new { mensaje = ex.InnerException?.Message ?? ex.Message });
         }
     }
-
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateProducts)]
     [HttpPut("{productoResourceId:guid}")]
     public async Task<ActionResult<ProductoDetalleResponseModel>> Modificar(
         Guid productoResourceId,
@@ -78,6 +83,7 @@ public class ProductosController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanDeleteProducts)]
     [HttpDelete("{productoResourceId:guid}")]
     public async Task<IActionResult> Eliminar(
         Guid productoResourceId,
@@ -95,6 +101,7 @@ public class ProductosController : ControllerBase
         }
     }
 
+[Authorize(Policy = AuthorizationPolicies.CanReadReports)]
     [HttpPost("{productoId:int}/movimientos")]
     public async Task<ActionResult<IReadOnlyList<MovimientoProductoResponseModel>>> ListarMovimientos(
         int productoId,
@@ -117,7 +124,7 @@ public class ProductosController : ControllerBase
             return BadRequest(new { mensaje = ex.InnerException?.Message ?? ex.Message });
         }
     }
-
+    [Authorize(Policy = AuthorizationPolicies.CanReadProducts)]
     [HttpGet("{productoId:int}")]
     public async Task<ActionResult<ProductoDetalleResponseModel>> ObtenerPorId(
     int productoId,

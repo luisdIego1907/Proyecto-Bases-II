@@ -1,4 +1,6 @@
+using Domain.Entities;
 using DomainService.Interfaces;
+using Dto;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Repositories.Results;
 
@@ -47,5 +49,27 @@ public class UsuarioService : IUsuarioService
             cancellationToken);
 
         return roles.Select(r => r.Nombre).ToList();
+    }
+
+      public async Task<Usuario?> GetByUserAndPassword(AuthorizationRequestDto request)
+    {
+        var user = await _usuarioRepository.GetByUsernameAsync(request.Username);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var passwordIsValid = BCrypt.Net.BCrypt.Verify(
+            request.Password,
+            user.ContrasenaHash
+        );
+
+        if (!passwordIsValid)
+        {
+            return null;
+        }
+
+        return user;
     }
 }

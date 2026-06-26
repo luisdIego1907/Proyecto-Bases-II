@@ -1,6 +1,8 @@
 using Api.Mappers;
 using Api.Models.Usuarios;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -9,12 +11,13 @@ namespace Api.Controllers;
 [Route("api/usuarios")]
 public class UsuariosController : ControllerBase
 {
-     private readonly IUsuarioFacade _usuarioFacade;
+    private readonly IUsuarioFacade _usuarioFacade;
 
     public UsuariosController(IUsuarioFacade usuarioFacade)
     {
         _usuarioFacade = usuarioFacade;
     }
+
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<UsuarioResponseModel>>> Listar(
@@ -24,7 +27,7 @@ public class UsuariosController : ControllerBase
 
         return Ok(usuarios.Select(UsuarioApiMapper.ToModel).ToList());
     }
-
+    
     [HttpGet("{usuarioResourceId:guid}")]
     public async Task<ActionResult<UsuarioResponseModel>> ObtenerPorResourceId(
         Guid usuarioResourceId,

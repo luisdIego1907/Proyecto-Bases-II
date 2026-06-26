@@ -1,11 +1,14 @@
 using Api.Mappers;
 using Api.Models.Common;
 using Api.Models.Despachos;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/despachos")]
 public class DespachosController : ControllerBase
@@ -17,6 +20,7 @@ public class DespachosController : ControllerBase
         _despachoFacade = despachoFacade;
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanCreateDispatches)]
     [HttpPost]
     public async Task<ActionResult<CrearDespachoResponseModel>> Crear(
         [FromBody] CrearDespachoRequestModel request,
@@ -41,6 +45,7 @@ public class DespachosController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanCreateDispatches)]
     [HttpPost("carrito")]
     public async Task<ActionResult<AgregarProductoCarritoResponseModel>> AgregarProductoCarrito(
         [FromBody] AgregarProductoCarritoRequestModel request,
@@ -67,6 +72,7 @@ public class DespachosController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanProcessDispatches)]
     [HttpPost("procesar")]
     public async Task<ActionResult<ProcesarDespachoResponseModel>> Procesar(
         [FromBody] ProcesarDespachoRequestModel request,
@@ -93,6 +99,7 @@ public class DespachosController : ControllerBase
         }
     }
 
+     [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
     [HttpGet("ultima-semana")]
     public async Task<ActionResult<IReadOnlyList<DespachoResumenResponseModel>>> ListarUltimaSemana(
         CancellationToken cancellationToken)
@@ -102,6 +109,7 @@ public class DespachosController : ControllerBase
         return Ok(despachos.Select(DespachoApiMapper.ToModel).ToList());
     }
 
+     [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
     [HttpPost("por-fecha")]
     public async Task<ActionResult<IReadOnlyList<DespachoResumenResponseModel>>> ListarPorFecha(
         [FromBody] RangoFechaRequestModel request,
@@ -123,6 +131,7 @@ public class DespachosController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
     [HttpGet("{despachoId:int}/detalle")]
     public async Task<ActionResult<IReadOnlyList<DetalleDespachoResponseModel>>> VerDetalle(
         int despachoId,

@@ -1,10 +1,13 @@
 using Api.Mappers;
 using Api.Models.Clientes;
+using Api.Security;
 using Facade.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/clientes")]
 public class ClientesController : ControllerBase
@@ -16,6 +19,7 @@ public class ClientesController : ControllerBase
         _clienteFacade = clienteFacade;
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanReadClients)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ClienteResponseModel>>> Listar(
         CancellationToken cancellationToken)
@@ -25,6 +29,7 @@ public class ClientesController : ControllerBase
         return Ok(clientes.Select(ClienteApiMapper.ToModel).ToList());
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanCreateClients)]
     [HttpPost]
     public async Task<ActionResult<ClienteResponseModel>> Crear(
         [FromBody] CrearClienteRequestModel request,
@@ -49,6 +54,7 @@ public class ClientesController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanUpdateClients)]
     [HttpPut("{clienteResourceId:guid}")]
     public async Task<ActionResult<ClienteResponseModel>> Modificar(
         Guid clienteResourceId,
@@ -77,6 +83,7 @@ public class ClientesController : ControllerBase
         }
     }
 
+    [Authorize(Policy = AuthorizationPolicies.CanDeleteClients)]
     [HttpDelete("{clienteResourceId:guid}")]
     public async Task<IActionResult> Eliminar(
         Guid clienteResourceId,

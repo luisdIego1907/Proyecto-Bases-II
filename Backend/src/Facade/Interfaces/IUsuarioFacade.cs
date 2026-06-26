@@ -1,3 +1,5 @@
+using Domain.Entities;
+using Dto;
 using Dto.Usuario_Roles;
 
 namespace Facade.Interfaces;
@@ -14,4 +16,5 @@ public interface IUsuarioFacade
     Task<UsuarioRolesResponseDto?> ObtenerRolesAsync(
         Guid usuarioResourceId,
         CancellationToken cancellationToken = default);
+
 }

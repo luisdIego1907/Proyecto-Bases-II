@@ -1,3 +1,4 @@
+using Domain.Entities;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Repositories.Results;
 using Microsoft.EntityFrameworkCore;
@@ -46,5 +47,13 @@ public class UsuarioRepository : IUsuarioRepository
                 """)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<Usuario?> GetByUsernameAsync(string username)
+    {
+        return _context.Usuarios
+            .Include(u => u.UsuarioRoles)
+            .ThenInclude(ur => ur.RolUsuario)
+            .FirstOrDefaultAsync(u => u.NombreUsuario == username);
     }
 }

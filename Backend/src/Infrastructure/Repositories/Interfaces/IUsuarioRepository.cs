@@ -1,3 +1,4 @@
+using Domain.Entities;
 using Infrastructure.Repositories.Results;
 
 namespace Infrastructure.Repositories.Interfaces;
@@ -14,4 +15,6 @@ public interface IUsuarioRepository
     Task<IReadOnlyList<UsuarioRolResult>> ListarRolesAsync(
         Guid usuarioResourceId,
         CancellationToken cancellationToken = default);
+
+    Task<Usuario?> GetByUsernameAsync(string username);
 }
