@@ -9,6 +9,11 @@ import {
   updateProduct,
 } from "../../services/ProductService";
 
+import {
+  validateProductForm,
+  type ProductFormErrors,
+} from "./validations/ProductValidation";
+
 type ProductFormData = {
   codigo: string;
   nombre: string;
@@ -41,7 +46,10 @@ export default function ProductForm() {
     estante: "",
   });
 
+  const [errors, setErrors] = useState<ProductFormErrors>({});
+
   const [loading, setLoading] = useState(isEdit);
+  const [saving, setSaving] = useState(false);
 
   const [product, setProduct] = useState<Product | null>(null);
 
@@ -85,39 +93,62 @@ export default function ProductForm() {
   ) => {
     const { name, value, type } = e.target;
 
+    let newValue: string | number | boolean = value;
+
+    if (type === "checkbox") {
+      newValue = (e.target as HTMLInputElement).checked;
+    } else if (type === "number") {
+      newValue = value === "" ? 0 : Number(value);
+    }
+
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : type === "number"
-          ? Number(value)
-          : value,
+      [name]: newValue,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const validationErrors = validateProductForm({
+      codigo: form.codigo,
+      nombre: form.nombre,
+      detalle: form.detalle,
+      stockCritico: form.stockCritico,
+    });
+
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
     try {
+      setSaving(true);
+
       if (isEdit && product) {
         await updateProduct({
           ...product,
-          nombre: form.nombre,
+          nombre: form.nombre.trim(),
           stockCritico: form.stockCritico,
-          bodega: form.bodega,
-          pasillo: form.pasillo,
-          estante: form.estante,
+          bodega: form.bodega.trim(),
+          pasillo: form.pasillo.trim(),
+          estante: form.estante.trim(),
         });
       } else {
         await createProduct({
-          codigo: form.codigo,
-          nombre: form.nombre,
-          detalle: form.detalle,
+          codigo: form.codigo.trim(),
+          nombre: form.nombre.trim(),
+          detalle: form.detalle.trim(),
           stockCritico: form.stockCritico,
-          bodega: form.bodega,
-          pasillo: form.pasillo,
-          estante: form.estante,
+          bodega: form.bodega.trim(),
+          pasillo: form.pasillo.trim(),
+          estante: form.estante.trim(),
         });
       }
 
@@ -125,6 +156,8 @@ export default function ProductForm() {
     } catch (error) {
       console.error(error);
       alert("Error al guardar el producto.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -162,12 +195,32 @@ export default function ProductForm() {
                   <label className="text-sm font-medium text-slate-600">
                     Código
                   </label>
+
                   <input
                     name="codigo"
                     value={form.codigo}
                     onChange={handleChange}
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                    maxLength={50}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border ${errors.codigo
+                      ? "border-red-500"
+                      : "border-slate-200"
+                      } focus:outline-none focus:ring-2 focus:ring-emerald-300`}
                   />
+
+                  <p
+                    className={`text-sm mt-1 ${form.codigo.length === 50
+                      ? "text-green-600 font-medium"
+                      : "text-slate-500"
+                      }`}
+                  >
+                    {form.codigo.length}/50 caracteres
+                  </p>
+
+                  {errors.codigo && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.codigo}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -175,16 +228,34 @@ export default function ProductForm() {
                 <label className="text-sm font-medium text-slate-600">
                   Nombre
                 </label>
+
                 <input
                   name="nombre"
                   value={form.nombre}
                   onChange={handleChange}
-                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                  maxLength={100}
+                  className={`mt-2 w-full px-4 py-3 rounded-xl border ${errors.nombre
+                    ? "border-red-500"
+                    : "border-slate-200"
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-300`}
                 />
+
+                <p
+                  className={`text-sm mt-1 ${form.nombre.length === 100
+                    ? "text-green-600 font-medium"
+                    : "text-slate-500"
+                    }`}
+                >
+                  {form.nombre.length}/100 caracteres
+                </p>
+
+                {errors.nombre && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.nombre}
+                  </p>
+                )}
               </div>
-
             </div>
-
             <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
               <label className="text-sm font-medium text-slate-600">
                 Stock crítico
@@ -194,9 +265,19 @@ export default function ProductForm() {
                 type="number"
                 name="stockCritico"
                 value={form.stockCritico}
+                min={0}
                 onChange={handleChange}
-                className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                className={`mt-2 w-full px-4 py-3 rounded-xl border ${errors.stockCritico
+                  ? "border-red-500"
+                  : "border-slate-200"
+                  } focus:outline-none focus:ring-2 focus:ring-emerald-300`}
               />
+
+              {errors.stockCritico && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.stockCritico}
+                </p>
+              )}
             </div>
 
             <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
@@ -230,7 +311,6 @@ export default function ProductForm() {
                 />
               </div>
             </div>
-
             {!isEdit && (
               <div>
                 <label className="text-sm font-medium text-slate-600">
@@ -242,8 +322,27 @@ export default function ProductForm() {
                   value={form.detalle}
                   onChange={handleChange}
                   rows={4}
-                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200"
+                  maxLength={255}
+                  className={`mt-2 w-full px-4 py-3 rounded-xl border ${errors.detalle
+                    ? "border-red-500"
+                    : "border-slate-200"
+                    } focus:outline-none focus:ring-2 focus:ring-emerald-300`}
                 />
+
+                <p
+                  className={`text-sm mt-1 ${form.detalle.length === 255
+                    ? "text-green-600 font-medium"
+                    : "text-slate-500"
+                    }`}
+                >
+                  {form.detalle.length}/255 caracteres
+                </p>
+
+                {errors.detalle && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.detalle}
+                  </p>
+                )}
               </div>
             )}
 
@@ -253,16 +352,21 @@ export default function ProductForm() {
             <button
               type="button"
               onClick={() => navigate("/products")}
-              className="px-6 py-3 rounded-xl border border-slate-300"
+              className="px-6 py-3 rounded-xl border border-slate-300 hover:bg-slate-100 transition"
             >
               Cancelar
             </button>
 
             <button
               type="submit"
-              className="px-6 py-3 rounded-xl bg-emerald-500 text-white font-semibold"
+              disabled={saving}
+              className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-semibold transition"
             >
-              {isEdit ? "Actualizar Producto" : "Guardar Producto"}
+              {saving
+                ? "Guardando..."
+                : isEdit
+                  ? "Actualizar Producto"
+                  : "Guardar Producto"}
             </button>
           </div>
         </form>
