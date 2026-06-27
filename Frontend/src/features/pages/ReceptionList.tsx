@@ -66,7 +66,7 @@ export default function ReceptionList({
         </h3>
 
         <p className="mt-1 text-slate-500">
-          Recepciones registradas para este producto.
+          Recepciones registradas para este producto
         </p>
       </div>
 
