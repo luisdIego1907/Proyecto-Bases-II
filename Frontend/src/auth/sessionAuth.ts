@@ -55,3 +55,32 @@ export function isAuthenticated(): boolean {
 
   return !isTokenExpired();
 }
+
+/**
+ * Obtiene los roles del usuario autenticado desde el JWT.
+ */
+export function getRoles(): string[] {
+  const payload = decodePayload();
+
+  if (!payload) {
+    return [];
+  }
+
+  const roleClaim =
+    payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+  if (!roleClaim) {
+    return [];
+  }
+
+  return Array.isArray(roleClaim) ? roleClaim : [roleClaim];
+}
+
+/**
+ * Verifica si el usuario tiene al menos uno de los roles permitidos.
+ */
+export function hasRole(allowedRoles: string[]): boolean {
+  const userRoles = getRoles();
+
+  return allowedRoles.some((role) => userRoles.includes(role));
+}
