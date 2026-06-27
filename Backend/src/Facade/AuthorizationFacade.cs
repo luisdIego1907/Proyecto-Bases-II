@@ -1,9 +1,7 @@
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Domain.Entities;
-using DomainService;
 using DomainService.Interfaces;
 using Dto;
 using Exceptions;
@@ -16,17 +14,21 @@ namespace Facade;
 public class AuthorizationFacade : IAuthorizationFacade
 {
     private readonly IUsuarioService _userService;
+    private readonly IRolUsuarioService _rolUsuarioService;
     private readonly IConfiguration _configuration;
 
     public AuthorizationFacade(
-           IUsuarioService userService,
-           IConfiguration configuration)
+        IUsuarioService userService,
+        IRolUsuarioService rolUsuarioService,
+        IConfiguration configuration)
     {
         _userService = userService;
+        _rolUsuarioService = rolUsuarioService;
         _configuration = configuration;
     }
 
-    public async Task<AuthorizationResponseDto> AuthorizeAsync(AuthorizationRequestDto request)
+    public async Task<AuthorizationResponseDto> AuthorizeAsync(
+        AuthorizationRequestDto request)
     {
         var user = await _userService.GetByUserAndPassword(request);
 
@@ -40,6 +42,9 @@ public class AuthorizationFacade : IAuthorizationFacade
             throw new UnauthorizedResponseException("El usuario se encuentra inactivo.");
         }
 
+        var roles = await _rolUsuarioService.ListarPorUsuarioResourceIdAsync(
+            user.UsuarioResourceId);
+
         var jwtSettings = _configuration.GetSection("Jwt");
 
         var expirationMinutesValue = jwtSettings["ExpirationMinutes"];
@@ -51,7 +56,11 @@ public class AuthorizationFacade : IAuthorizationFacade
 
         var expirationMinutes = int.Parse(expirationMinutesValue);
 
-        var token = GenerateJwtToken(user, jwtSettings, expirationMinutes);
+        var token = GenerateJwtToken(
+            user,
+            roles,
+            jwtSettings,
+            expirationMinutes);
 
         return new AuthorizationResponseDto
         {
@@ -62,6 +71,7 @@ public class AuthorizationFacade : IAuthorizationFacade
 
     private static string GenerateJwtToken(
         Usuario user,
+        IReadOnlyList<string> roles,
         IConfigurationSection jwtSettings,
         int expirationMinutes)
     {
@@ -85,13 +95,11 @@ public class AuthorizationFacade : IAuthorizationFacade
         }
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(secret)
-        );
+            Encoding.UTF8.GetBytes(secret));
 
         var credentials = new SigningCredentials(
             key,
-            SecurityAlgorithms.HmacSha256
-        );
+            SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
@@ -102,11 +110,8 @@ public class AuthorizationFacade : IAuthorizationFacade
         };
 
         claims.AddRange(
-            user.UsuarioRoles.Select(usuarioRol =>
-                new Claim(
-                    ClaimTypes.Role,
-                    usuarioRol.RolUsuario.Nombre.ToString()
-                )
+            roles.Select(role =>
+                new Claim(ClaimTypes.Role, role)
             )
         );
 
@@ -120,6 +125,4 @@ public class AuthorizationFacade : IAuthorizationFacade
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
 }
-

@@ -21,4 +21,16 @@ public class RolUsuarioRepository : IRolUsuarioRepository
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<RolUsuarioResult>> ListarPorUsuarioResourceIdAsync(
+    Guid usuarioResourceId,
+    CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<RolUsuarioResult>()
+            .FromSqlInterpolated($"""
+            CALL sp_ListarRolesPorUsuarioResourceId({usuarioResourceId.ToString()})
+        """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }
