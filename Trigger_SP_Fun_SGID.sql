@@ -1254,19 +1254,48 @@ END
 $$
 DELIMITER ;
 
-DELIMITER $$ 
+DELIMITER $$
+
 DROP PROCEDURE IF EXISTS sp_ListarRolesPorUsuarioResourceId$$
+
 CREATE PROCEDURE sp_ListarRolesPorUsuarioResourceId(
     IN p_UsuarioResourceId CHAR(36)
 )
 BEGIN
     SELECT
+        r.RolUsuarioId,
+        r.RolUsuarioResourceId,
         r.Nombre
     FROM USUARIO u
-    INNER JOIN USUARIO_ROL ur ON ur.UsuarioId = u.UsuarioId
-    INNER JOIN ROL_USUARIO r ON r.RolUsuarioId = ur.RolUsuarioId
+    INNER JOIN USUARIO_ROL ur
+        ON ur.UsuarioId = u.UsuarioId
+    INNER JOIN ROL_USUARIO r
+        ON r.RolUsuarioId = ur.RolUsuarioId
     WHERE u.UsuarioResourceId = p_UsuarioResourceId
     ORDER BY r.Nombre;
-END
-$$
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS  sp_ObtenerUsuarioPorNombreUsuario$$
+
+CREATE PROCEDURE sp_ObtenerUsuarioPorNombreUsuario(
+    IN p_Username VARCHAR(50)
+)
+BEGIN
+    SELECT
+        UsuarioId,
+        UsuarioResourceId,
+        NombreUsuario,
+        Nombre,
+        Apellidos,
+        Correo,
+        ContrasenaHash,
+        Activo
+    FROM USUARIO
+    WHERE NombreUsuario = p_Username
+      AND Activo = 1
+    LIMIT 1;
+END $$
 DELIMITER ;
