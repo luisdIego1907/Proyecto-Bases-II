@@ -49,11 +49,17 @@ public class UsuarioRepository : IUsuarioRepository
             .ToListAsync(cancellationToken);
     }
 
-    public Task<Usuario?> GetByUsernameAsync(string username)
+    public async Task<Usuario?> GetByUsernameAsync(
+    string username,
+    CancellationToken cancellationToken = default)
     {
-        return _context.Usuarios
-            .Include(u => u.UsuarioRoles)
-            .ThenInclude(ur => ur.RolUsuario)
-            .FirstOrDefaultAsync(u => u.NombreUsuario == username);
+        var result = await _context.Usuarios
+            .FromSqlInterpolated($"""
+            CALL sp_ObtenerUsuarioPorNombreUsuario({username})
+        """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return result.FirstOrDefault();
     }
 }

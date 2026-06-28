@@ -5,8 +5,8 @@ namespace Infrastructure.Repositories.Interfaces;
 
 public interface IUsuarioRepository
 {
-     Task<IReadOnlyList<UsuarioResult>> ListarAsync(
-        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<UsuarioResult>> ListarAsync(
+       CancellationToken cancellationToken = default);
 
     Task<UsuarioResult?> ObtenerPorResourceIdAsync(
         Guid usuarioResourceId,
@@ -16,5 +16,5 @@ public interface IUsuarioRepository
         Guid usuarioResourceId,
         CancellationToken cancellationToken = default);
 
-    Task<Usuario?> GetByUsernameAsync(string username);
+    Task<Usuario?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
 }

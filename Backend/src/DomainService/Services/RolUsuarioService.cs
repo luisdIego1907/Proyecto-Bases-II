@@ -18,4 +18,17 @@ public class RolUsuarioService : IRolUsuarioService
     {
         return await _rolUsuarioRepository.ListarAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<string>> ListarPorUsuarioResourceIdAsync(
+    Guid usuarioResourceId,
+    CancellationToken cancellationToken = default)
+    {
+        var roles = await _rolUsuarioRepository.ListarPorUsuarioResourceIdAsync(
+            usuarioResourceId,
+            cancellationToken);
+
+        return roles
+            .Select(r => r.Nombre)
+            .ToList();
+    }
 }

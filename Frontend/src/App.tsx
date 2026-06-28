@@ -37,21 +37,24 @@ function App() {
 
         <main className="flex-1">
           <Routes>
+            {/* Login */}
             <Route path="/login" element={<LoginForm />} />
 
+            {/* Home */}
             <Route
               path="/"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <Home />
                 </ProtectedRoute>
               }
             />
 
+            {/* Clientes */}
             <Route
               path="/clients"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <ClientList />
                 </ProtectedRoute>
               }
@@ -60,7 +63,7 @@ function App() {
             <Route
               path="/clients/register"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <ClientForm />
                 </ProtectedRoute>
               }
@@ -69,16 +72,17 @@ function App() {
             <Route
               path="/clients/:id"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <ClientForm />
                 </ProtectedRoute>
               }
             />
 
+            {/* Productos */}
             <Route
               path="/products"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <ProductList />
                 </ProtectedRoute>
               }
@@ -87,7 +91,7 @@ function App() {
             <Route
               path="/products/register"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <ProductForm />
                 </ProtectedRoute>
               }
@@ -96,27 +100,36 @@ function App() {
             <Route
               path="/products/:id"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <ProductForm />
                 </ProtectedRoute>
               }
             />
 
-            <Route path="/products/:id/reception" element={<ReceptionForm />} />
+            <Route
+              path="/products/:id/reception"
+              element={
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                  <ReceptionForm />
+                </ProtectedRoute>
+              }
+            />
 
+            {/* Inventario */}
             <Route
               path="/inventory"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <InventoryList />
                 </ProtectedRoute>
               }
             />
 
+            {/* Despachos */}
             <Route
               path="/dispatch"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <DispatchList />
                 </ProtectedRoute>
               }
@@ -125,21 +138,23 @@ function App() {
             <Route
               path="/dispatch/create"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <CreateDispatch />
                 </ProtectedRoute>
               }
             />
 
+            {/* Auditoría */}
             <Route
               path="/audit"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
                   <AuditPage />
                 </ProtectedRoute>
               }
             />
 
+            {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

@@ -13,8 +13,7 @@ import {
   Boxes,
   Logs,
 } from "lucide-react";
-
-import { isAuthenticated, clearSession } from "../auth/sessionAuth";
+import { clearSession, hasRole, isAuthenticated } from "../auth/sessionAuth";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,16 +28,42 @@ export default function Header() {
   }, []);
 
   const links = [
-    { name: "Inicio", icon: <House size={18} />, to: "/" },
-    { name: "Clientes", icon: <Users size={18} />, to: "/clients" },
+    {
+      name: "Inicio",
+      icon: <House size={18} />,
+      to: "/",
+      roles: ["ADMIN", "SUPERVISOR", "OPERARIO"],
+    },
+    {
+      name: "Clientes",
+      icon: <Users size={18} />,
+      to: "/clients",
+      roles: ["ADMIN", "SUPERVISOR", "OPERARIO"],
+    },
     {
       name: "Recepción de Mercancía",
       icon: <Box size={18} />,
       to: "/products",
+      roles: ["ADMIN", "SUPERVISOR", "OPERARIO"],
     },
-    { name: "Inventario", icon: <Clipboard size={18} />, to: "/inventory" },
-    { name: "Despacho", icon: <Boxes size={18} />, to: "/dispatch" },
-    { name: "Auditorias", icon: <Logs size={18} />, to: "/audit" },
+    {
+      name: "Inventario",
+      icon: <Clipboard size={18} />,
+      to: "/inventory",
+      roles: ["ADMIN", "SUPERVISOR", "OPERARIO"],
+    },
+    {
+      name: "Despacho",
+      icon: <Boxes size={18} />,
+      to: "/dispatch",
+      roles: ["ADMIN", "SUPERVISOR"],
+    },
+    {
+      name: "Auditorías",
+      icon: <Logs size={18} />,
+      to: "/audit",
+      roles: ["ADMIN", "SUPERVISOR"],
+    },
   ];
 
   const handleLogout = () => {
@@ -65,21 +90,23 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            {links.map((link) => (
-              <Link
-                key={link.name}
-                to={link.to}
-                className="group relative flex items-center gap-2 text-[15px] font-semibold text-slate-600 transition-colors hover:text-blue-600"
-              >
-                <span className="text-slate-400 transition-all group-hover:text-blue-600">
-                  {link.icon}
-                </span>
+            {links
+              .filter((link) => hasRole(link.roles))
+              .map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.to}
+                  className="group relative flex items-center gap-2 text-[15px] font-semibold text-slate-600 transition-colors hover:text-blue-600"
+                >
+                  <span className="text-slate-400 transition-all group-hover:text-blue-600">
+                    {link.icon}
+                  </span>
 
-                {link.name}
+                  {link.name}
 
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full opacity-0 group-hover:opacity-100" />
-              </Link>
-            ))}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full opacity-0 group-hover:opacity-100" />
+                </Link>
+              ))}
 
             <div className="relative ml-2">
               <button
@@ -117,17 +144,19 @@ export default function Header() {
         {isOpen && (
           <div className="md:hidden border-t border-slate-200 py-4">
             <nav className="flex flex-col gap-4">
-              {links.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.to}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 text-slate-600 hover:text-blue-600"
-                >
-                  {link.icon}
-                  {link.name}
-                </Link>
-              ))}
+              {links
+                .filter((link) => hasRole(link.roles))
+                .map((link) => (
+                  <Link
+                    key={link.name}
+                    to={link.to}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 text-slate-600 hover:text-blue-600"
+                  >
+                    {link.icon}
+                    {link.name}
+                  </Link>
+                ))}
 
               <button
                 type="button"
