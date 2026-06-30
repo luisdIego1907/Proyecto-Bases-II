@@ -6,92 +6,84 @@ import { apiClient } from "./apiClient";
 const URL_API = `${config.api.url}/api/productos`;
 
 export async function getProducts(): Promise<Product[]> {
-    const response = await fetch(`${URL_API}/inventario`);
-
-    if (!response.ok) {
-        throw new Error("Error al cargar productos");
-    }
-
-    return await response.json();
+  try {
+    return await apiClient<Product[]>(`${URL_API}/inventario`);
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
 
 export async function getProductById(productoId: number): Promise<Product> {
-    const response = await fetch(`${URL_API}/${productoId}`);
-
-    if (!response.ok) {
-        throw new Error("Error al obtener producto");
-    }
-
-    return await response.json();
+  try {
+    return await apiClient<Product>(`${URL_API}/${productoId}`);
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
 
-export async function deleteProduct(
-    productoResourceId: string
-): Promise<void> {
-    const response = await fetch(`${URL_API}/${productoResourceId}`, {
-        method: "DELETE",
+export async function deleteProduct(productoResourceId: string): Promise<void> {
+  try {
+    await apiClient<void>(`${URL_API}/${productoResourceId}`, {
+      method: "DELETE",
     });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.mensaje);
-    }
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
 
 export async function createProduct(product: {
-    codigo: string;
-    nombre: string;
-    detalle?: string;
-    stockCritico: number;
-    bodega: string;
-    pasillo: string;
-    estante: string;
+  codigo: string;
+  nombre: string;
+  detalle?: string;
+  stockCritico: number;
+  bodega: string;
+  pasillo: string;
+  estante: string;
 }): Promise<void> {
-    const response = await fetch(URL_API, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            codigo: product.codigo,
-            nombre: product.nombre,
-            detalle: product.detalle,
-            stockCritico: product.stockCritico,
-            bodega: product.bodega,
-            pasillo: product.pasillo,
-            estante: product.estante,
-        }),
+  try {
+    await apiClient<void>(URL_API, {
+      method: "POST",
+      body: JSON.stringify({
+        codigo: product.codigo,
+        nombre: product.nombre,
+        detalle: product.detalle,
+        stockCritico: product.stockCritico,
+        bodega: product.bodega,
+        pasillo: product.pasillo,
+        estante: product.estante,
+      }),
     });
-
-    if (!response.ok) {
-        throw new Error("Error al crear producto");
-    }
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
 
 export async function updateProduct(product: Product): Promise<void> {
-    const response = await fetch(`${URL_API}/${product.productoResourceId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            nombre: product.nombre,
-            stockCritico: product.stockCritico,
-            ubicacionResourceId: product.ubicacionResourceId,
-        }),
+  try {
+    await apiClient<void>(`${URL_API}/${product.productoResourceId}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        nombre: product.nombre,
+        stockCritico: product.stockCritico,
+        ubicacionResourceId: product.ubicacionResourceId,
+      }),
     });
-
-    if (!response.ok) {
-        throw new Error("Error al actualizar producto");
-    }
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
 
-//Funcion listar inventario, conecta directo al backend esta lista para no hacerlo despues
+// Función listar inventario
 export async function getInventory(): Promise<InventarioData[]> {
-    try {
-        return await apiClient<InventarioData[]>(`${URL_API}/inventario`);
-    } catch (error) {
-        console.error("Error en StockService:", error);
-        throw error;
-    }
+  try {
+    return await apiClient<InventarioData[]>(`${URL_API}/inventario`);
+  } catch (error) {
+    console.error("Error en ProductService:", error);
+    throw error;
+  }
 }
