@@ -4,9 +4,14 @@ import DispatchStatusBadge from "../forms/DispatchStatusBadge";
 interface Props {
   dispatches: DispatchSummary[];
   onViewDetail: (id: number) => void;
+  onProcess: (id: number) => void;
 }
 
-export default function DispatchTable({ dispatches, onViewDetail }: Props) {
+export default function DispatchTable({
+  dispatches,
+  onViewDetail,
+  onProcess,
+}: Props) {
   return (
     <div className="max-h-[550px] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200">
       <table className="min-w-full text-sm">
@@ -55,16 +60,25 @@ export default function DispatchTable({ dispatches, onViewDetail }: Props) {
               </td>
 
               <td className="px-4 py-3">
-                {dispatch.estado === "PROCESADO" ? (
-                  <button
-                    onClick={() => onViewDetail(dispatch.despachoId)}
-                    className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cyan-700"
-                  >
-                    Ver detalle
-                  </button>
-                ) : (
-                  <span className="text-gray-400">—</span>
-                )}
+                <div className="flex gap-2">
+                  {dispatch.estado === "PROCESADO" && (
+                    <button
+                      onClick={() => onViewDetail(dispatch.despachoId)}
+                      className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cyan-700"
+                    >
+                      Ver detalle
+                    </button>
+                  )}
+
+                  {dispatch.estado === "PENDIENTE" && (
+                    <button
+                      onClick={() => onProcess(dispatch.despachoId)}
+                      className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-amber-600"
+                    >
+                      Procesar
+                    </button>
+                  )}
+                </div>
               </td>
             </tr>
           ))}
