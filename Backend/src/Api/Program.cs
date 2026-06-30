@@ -1,15 +1,15 @@
+using System.Text;
+using Api.Security;
 using DomainService.Interfaces;
 using DomainService.Services;
 using Facade;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Api.Security;
 using Facade.Interfaces;
 using Infrastructure;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -118,8 +118,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(AuthorizationPolicies.CanReadDispatches, policy =>
         policy.RequireRole(
             RoleNames.Admin,
-            RoleNames.Supervisor
-        ));
+            RoleNames.Supervisor,
+            RoleNames.Operario
+            ));
 
     // Reportes y auditoría
     options.AddPolicy(AuthorizationPolicies.CanReadReports, policy =>

@@ -56,7 +56,7 @@ export default function Header() {
       name: "Despacho",
       icon: <Boxes size={18} />,
       to: "/dispatch",
-      roles: ["ADMIN", "SUPERVISOR"],
+      roles: ["ADMIN", "SUPERVISOR", "OPERARIO"],
     },
     {
       name: "Auditorías",

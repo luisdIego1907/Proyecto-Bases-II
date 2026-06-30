@@ -15,28 +15,78 @@ import {
   createDispatch,
   processDispatch,
 } from "../../services/DispatchService";
-import FeedbackModal from "../../shared/FeedbackModal";
 
+import FeedbackModal from "../../shared/FeedbackModal";
+import { getUserId } from "../../auth/sessionAuth";
+
+/**
+ * CreateDispatch
+ *
+ * Este componente maneja todo el flujo de creación y procesamiento de despachos:
+ * 1. Carga de clientes válidos
+ * 2. Carga de inventario real desde backend
+ * 3. Creación de despacho
+ * 4. Agregado de productos al carrito del despacho
+ * 5. Procesamiento final del despacho
+ *
+ * El backend es la fuente de verdad del inventario, por lo que el frontend
+ * no simula cambios en stock, solo refleja datos reales.
+ */
 export default function CreateDispatch() {
+  /**
+   * Clientes disponibles para despachar
+   */
   const [clients, setClients] = useState<ClientListItem[]>([]);
+
+  /**
+   * Cliente seleccionado para el despacho actual
+   */
   const [selectedClient, setSelectedClient] = useState<number | null>(null);
 
+  /**
+   * Productos disponibles en inventario (estado real del backend)
+   */
   const [products, setProducts] = useState<InventarioData[]>([]);
+
+  /**
+   * Carrito temporal del despacho
+   */
   const [cart, setCart] = useState<CartItem[]>([]);
 
+  /**
+   * ID del despacho activo
+   */
   const [dispatchId, setDispatchId] = useState<number | null>(null);
+
+  /**
+   * Indica si ya se creó el despacho
+   */
   const [dispatchCreated, setDispatchCreated] = useState(false);
 
+  /**
+   * Estados de carga y control de acciones
+   */
   const [loading, setLoading] = useState(true);
   const [creatingDispatch, setCreatingDispatch] = useState(false);
   const [processingDispatch, setProcessingDispatch] = useState(false);
+
+  /**
+   * Modal de feedback para mensajes al usuario
+   */
   const [modal, setModal] = useState({
     open: false,
     type: "success" as "success" | "error" | "warning",
     message: "",
   });
 
-  //Funcion para mostrar el mensaje del herlper
+  /**
+   * Usuario autenticado (se obtiene una sola vez al renderizar)
+   */
+  const userId = getUserId();
+
+  /**
+   * Muestra mensajes en el modal de feedback
+   */
   function showMessage(type: "success" | "error" | "warning", message: string) {
     setModal({
       open: true,
@@ -45,6 +95,11 @@ export default function CreateDispatch() {
     });
   }
 
+  /**
+   * Carga inicial de datos:
+   * - Clientes válidos (DESTINO o AMBOS)
+   * - Inventario real desde backend
+   */
   async function loadInitialData() {
     try {
       const clientsData = await getClientes();
@@ -58,15 +113,16 @@ export default function CreateDispatch() {
 
       const inventory = await getInventory();
 
-      setProducts(
-        inventory.filter((product) => product.cantidadInventario > 0),
-      );
+      setProducts(inventory.filter((p) => p.cantidadInventario > 0));
     } catch (error) {
       console.log(error);
       alert("No se pudieron cargar los datos");
     }
   }
 
+  /**
+   * Carga inicial al montar el componente
+   */
   useEffect(() => {
     async function load() {
       await loadInitialData();
@@ -76,6 +132,9 @@ export default function CreateDispatch() {
     load();
   }, []);
 
+  /**
+   * Crea un despacho en estado PENDIENTE
+   */
   async function handleCreateDispatch() {
     if (!selectedClient) {
       showMessage("warning", "Debe seleccionar un cliente");
@@ -84,12 +143,17 @@ export default function CreateDispatch() {
 
     if (creatingDispatch) return;
 
+    if (!userId) {
+      showMessage("error", "Usuario no autenticado");
+      return;
+    }
+
     try {
       setCreatingDispatch(true);
 
       const response = await createDispatch({
         clienteId: selectedClient,
-        usuarioId: 1,
+        usuarioId: userId,
       });
 
       setDispatchId(response.despachoId);
@@ -107,6 +171,13 @@ export default function CreateDispatch() {
     }
   }
 
+  /**
+   * Agrega productos al carrito del despacho
+   *
+   * Importante:
+   * - NO se modifica el inventario local
+   * - El backend valida el stock real al procesar
+   */
   async function handleAddProduct(productId: number, quantity: number) {
     if (!dispatchId) {
       showMessage(
@@ -119,7 +190,6 @@ export default function CreateDispatch() {
     if (processingDispatch) return;
 
     const product = products.find((p) => p.productoId === productId);
-
     if (!product) return;
 
     if (quantity <= 0) {
@@ -145,10 +215,7 @@ export default function CreateDispatch() {
         if (existing) {
           return prev.map((item) =>
             item.productoId === productId
-              ? {
-                  ...item,
-                  cantidad: item.cantidad + quantity,
-                }
+              ? { ...item, cantidad: item.cantidad + quantity }
               : item,
           );
         }
@@ -162,19 +229,6 @@ export default function CreateDispatch() {
           },
         ];
       });
-
-      setProducts((prev) =>
-        prev
-          .map((item) =>
-            item.productoId === productId
-              ? {
-                  ...item,
-                  cantidadInventario: item.cantidadInventario - quantity,
-                }
-              : item,
-          )
-          .filter((item) => item.cantidadInventario > 0),
-      );
     } catch (error) {
       console.log(error);
 
@@ -184,6 +238,13 @@ export default function CreateDispatch() {
     }
   }
 
+  /**
+   * Procesa el despacho completo:
+   * - Valida existencia de despacho
+   * - Valida carrito no vacío
+   * - Envía a backend para procesamiento
+   * - Limpia estado local tras éxito
+   */
   async function handleProcessDispatch() {
     if (!dispatchId) {
       showMessage("error", "No existe despacho");
@@ -191,7 +252,12 @@ export default function CreateDispatch() {
     }
 
     if (cart.length === 0) {
-      showMessage("error", "Debe agregar màs productos");
+      showMessage("error", "Debe agregar más productos");
+      return;
+    }
+
+    if (!userId) {
+      showMessage("error", "Usuario no autenticado");
       return;
     }
 
@@ -202,13 +268,15 @@ export default function CreateDispatch() {
 
       const response = await processDispatch({
         despachoId: dispatchId,
-        usuarioId: 1,
+        usuarioId: userId,
       });
 
       showMessage("success", response.mensaje);
 
+      // Recarga inventario real desde backend
       await loadInitialData();
 
+      // Limpia estado del flujo
       setCart([]);
       setSelectedClient(null);
       setDispatchId(null);
@@ -224,6 +292,9 @@ export default function CreateDispatch() {
     }
   }
 
+  /**
+   * Loading inicial
+   */
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -234,14 +305,15 @@ export default function CreateDispatch() {
 
   return (
     <div className="container mx-auto px-6 py-8">
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800">Nuevo Despacho</h1>
-
         <p className="mt-1 text-slate-500">
           Seleccione un cliente y agregue productos al despacho
         </p>
       </div>
 
+      {/* Selector de cliente */}
       <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <ClientSelector
           clients={clients}
@@ -251,13 +323,14 @@ export default function CreateDispatch() {
         />
       </div>
 
+      {/* Contenido principal */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Productos */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-slate-800">
               Productos Disponibles
             </h2>
-
             <p className="mt-1 text-sm text-slate-500">
               Seleccione productos disponibles en inventario
             </p>
@@ -275,18 +348,16 @@ export default function CreateDispatch() {
           )}
         </div>
 
+        {/* Carrito */}
         <DispatchCart cart={cart} onProcess={handleProcessDispatch} />
       </div>
+
+      {/* Modal de feedback */}
       <FeedbackModal
         isOpen={modal.open}
         type={modal.type}
         message={modal.message}
-        onClose={() =>
-          setModal((prev) => ({
-            ...prev,
-            open: false,
-          }))
-        }
+        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
       />
     </div>
   );

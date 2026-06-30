@@ -129,7 +129,7 @@ function App() {
             <Route
               path="/dispatch"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <DispatchList />
                 </ProtectedRoute>
               }

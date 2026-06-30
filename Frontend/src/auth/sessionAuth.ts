@@ -84,3 +84,15 @@ export function hasRole(allowedRoles: string[]): boolean {
 
   return allowedRoles.some((role) => userRoles.includes(role));
 }
+
+/** Obtiene el id del usuario para ciertas acciones como despacho */
+export function getUserId(): number | null {
+  const payload = decodePayload();
+  if (!payload) return null;
+
+  const id = payload.usuarioId;
+
+  if (!id) return null;
+
+  return Number(id);
+}
