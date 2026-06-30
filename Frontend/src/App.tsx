@@ -37,10 +37,9 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-            {/* Login */}
+
             <Route path="/login" element={<LoginForm />} />
 
-            {/* Home */}
             <Route
               path="/"
               element={
@@ -50,7 +49,6 @@ function App() {
               }
             />
 
-            {/* Clientes */}
             <Route
               path="/clients"
               element={
@@ -78,7 +76,6 @@ function App() {
               }
             />
 
-            {/* Productos */}
             <Route
               path="/products"
               element={
@@ -115,7 +112,6 @@ function App() {
               }
             />
 
-            {/* Inventario */}
             <Route
               path="/inventory"
               element={
@@ -125,7 +121,6 @@ function App() {
               }
             />
 
-            {/* Despachos */}
             <Route
               path="/dispatch"
               element={
@@ -144,7 +139,6 @@ function App() {
               }
             />
 
-            {/* Auditoría */}
             <Route
               path="/audit"
               element={
