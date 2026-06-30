@@ -13,6 +13,7 @@ import {
   getDispatches,
   getDispatchDetails,
   filterDispatches,
+  processDispatch,
 } from "../../services/DispatchService";
 import FeedbackModal from "../../shared/FeedbackModal";
 
@@ -65,7 +66,28 @@ export default function DispatchList() {
     setDispatchDetails([]);
   }
 
-  // Temporal hasta conectar backend
+  //Procesar despacho
+  async function handleProcessDispatch(dispatchId: number) {
+    try {
+      const response = await processDispatch({
+        despachoId: dispatchId,
+        usuarioId: 1,
+      });
+
+      showMessage("success", response.mensaje);
+
+      const data = await getDispatches();
+      setDispatches(data);
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof Error) {
+        showMessage("error", error.message);
+      }
+    }
+  }
+
+  // Filtro de fechas
   async function handleFilter() {
     if (!startDate || !endDate) {
       showMessage("warning", "Debe seleccionar ambas fechas");
@@ -199,6 +221,7 @@ export default function DispatchList() {
         <DispatchTable
           dispatches={dispatches}
           onViewDetail={handleViewDetail}
+          onProcess={handleProcessDispatch}
         />
       )}
 
