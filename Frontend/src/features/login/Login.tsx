@@ -30,7 +30,7 @@ export default function LoginForm() {
     try {
       await loginUser(form);
 
-      navigate("/clients");
+      navigate("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Credenciales inválidas");
     } finally {
