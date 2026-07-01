@@ -16,6 +16,7 @@ import {
   processDispatch,
 } from "../../services/DispatchService";
 import FeedbackModal from "../../shared/FeedbackModal";
+import { getUserId } from "../../auth/sessionAuth";
 
 export default function DispatchList() {
   // Lista principal de despachos
@@ -69,9 +70,15 @@ export default function DispatchList() {
   //Procesar despacho
   async function handleProcessDispatch(dispatchId: number) {
     try {
+      const userId = getUserId();
+
+      if (userId === null) {
+        showMessage("error", "Sesión inválida");
+        return;
+      }
       const response = await processDispatch({
         despachoId: dispatchId,
-        usuarioId: 1,
+        usuarioId: userId,
       });
 
       showMessage("success", response.mensaje);
