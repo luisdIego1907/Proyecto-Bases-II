@@ -1,7 +1,9 @@
--- Verifica si un producto esta por debajo o igual a su stock critico.
--- Retorna:
--- 'REORDEN' si CantidadInventario <= StockCritico
--- 'OK' si CantidadInventario > StockCritico
+/* 
+    Verifica si un producto esta por debajo o igual a su stock critico.
+    Retorna:
+    'REORDEN' si CantidadInventario <= StockCritico
+    'OK' si CantidadInventario > StockCritico
+*/
 DELIMITER $$
 DROP FUNCTION IF EXISTS fn_VerificarAlertaStock$$
 CREATE FUNCTION fn_VerificarAlertaStock(
@@ -38,8 +40,13 @@ BEGIN
 END
 $$
 DELIMITER ;
-
--- Registra automaticamente cualquier cambio en CantidadInventario.
+/*
+    Se ejecuta despues de actualizar un producto. Si la cantidad de inventario
+    cambia, valida que exista la variable de sesion @UsuarioId para identificar al
+    usuario responsable. Luego inserta un registro de auditoria con la cantidad
+    anterior, la cantidad nueva, la fecha del cambio y el tipo de movimiento
+    generado: 'INCREMENTO' o 'REDUCCION'.
+*/
 DELIMITER $$
 DROP TRIGGER IF EXISTS tg_AuditoriaInventario$$
 CREATE TRIGGER tg_AuditoriaInventario
@@ -77,8 +84,15 @@ BEGIN
 END
 $$
 DELIMITER ;
-
--- Registra una recepcion de producto e incrementa el inventario.
+/*
+    Valida que el producto, cliente y usuario existan y esten activos. Tambien
+    verifica que el cliente pueda registrar recepciones y que la cantidad sea
+    mayor que cero. Ejecuta una transaccion donde inserta la recepcion y aumenta
+    la cantidad de inventario del producto. El cambio de inventario activa el
+    trigger de auditoria mediante la variable @UsuarioId.
+    Devuelve un mensaje de confirmacion, el producto afectado y la cantidad
+    ingresada.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_RegistrarRecepcion$$
 CREATE PROCEDURE sp_RegistrarRecepcion(
@@ -196,7 +210,13 @@ END
 $$
 DELIMITER ;
 
--- Crea una orden de despacho en estado PENDIENTE.
+/*
+    Valida que el cliente exista, este activo y pueda recibir despachos. Tambien
+    valida que el usuario exista y este activo. Si las validaciones son correctas,
+    inserta una nueva orden en la tabla DESPACHO con fecha actual y estado
+    'PENDIENTE'.
+    Devuelve un mensaje de confirmacion y el identificador del despacho creado.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_CrearDespacho$$
 CREATE PROCEDURE sp_CrearDespacho(
@@ -263,7 +283,14 @@ END
 $$
 DELIMITER ;
 
--- Agrega productos a la tabla intermedia DESPACHO_CARRITO.
+/*
+    Valida que el despacho exista y se encuentre pendiente. Tambien valida que el
+    producto exista, este activo y tenga inventario disponible. Luego inserta el
+    producto en DESPACHO_CARRITO. Si el producto ya estaba agregado al mismo
+    despacho, acumula la cantidad solicitada.
+    Devuelve un mensaje de confirmacion con el despacho, producto y cantidad
+    agregada.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_AgregarProductoCarrito$$
 CREATE PROCEDURE sp_AgregarProductoCarrito(
@@ -335,7 +362,17 @@ END
 $$
 DELIMITER ;
 
--- Procesa un despacho pendiente de forma transaccional.
+/*
+    Valida que el despacho exista, este pendiente y tenga productos agregados.
+    Tambien valida al usuario responsable. Dentro de una transaccion verifica si
+    existen productos inactivos o sin stock suficiente. Si hay problemas de stock,
+    cancela el despacho y limpia el carrito. Si todo es correcto, traslada los
+    productos del carrito al detalle del despacho, descuenta el inventario,
+    cambia el estado del despacho a 'PROCESADO' y limpia el carrito. Los cambios
+    de inventario se auditan mediante el trigger correspondiente.
+    Devuelve un mensaje indicando si el despacho fue procesado correctamente o
+    cancelado por stock insuficiente.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ProcesarDespacho$$
 CREATE PROCEDURE sp_ProcesarDespacho(
@@ -473,7 +510,14 @@ END
 $$
 DELIMITER ;
 
--- Lista las recepciones asociadas a un producto.
+
+/*
+    Consulta las recepciones del producto indicado, mostrando fecha, lote,
+    cliente, codigo del producto, nombre del producto, cantidad recibida y usuario
+    que registro el movimiento. Ordena los resultados desde la recepcion mas
+    reciente hasta la mas antigua.
+    Devuelve el historial de recepciones del producto.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarRecepcionesPorProducto$$
 CREATE PROCEDURE sp_ListarRecepcionesPorProducto(
@@ -501,7 +545,12 @@ $$
 DELIMITER ;
 
 
--- Lista los despachos de la ultima semana en orden descendente.
+/*
+    Consulta los despachos cuya fecha sea mayor o igual a la fecha actual menos
+    siete dias. Muestra informacion del despacho, cliente, estado y usuario
+    operario. Ordena los resultados desde el despacho mas reciente.
+    Devuelve el listado de despachos de la ultima semana.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarDespachosUltimaSemana$$
 CREATE PROCEDURE sp_ListarDespachosUltimaSemana()
@@ -523,7 +572,12 @@ $$
 DELIMITER ;
 
 
--- Lista despachos dentro de un rango de fechas.
+/*
+   Consulta los despachos cuya fecha se encuentre entre la fecha inicial y la
+    fecha final indicadas. Muestra informacion del despacho, cliente, estado y
+    usuario operario.
+    Devuelve los despachos encontrados en el rango indicado.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarDespachosPorFecha$$
 CREATE PROCEDURE sp_ListarDespachosPorFecha(
@@ -547,8 +601,12 @@ END
 $$
 DELIMITER ;
 
-
--- Muestra los productos de un despacho procesado.
+/*
+    Consulta el detalle de productos despachados para el despacho indicado,
+    siempre que el despacho tenga estado 'PROCESADO'. Muestra el codigo, nombre
+    del producto y cantidad despachada.
+    Devuelve el detalle de productos del despacho procesado.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_VerDetalleDespacho$$
 CREATE PROCEDURE sp_VerDetalleDespacho(
@@ -571,7 +629,13 @@ $$
 DELIMITER ;
 
 
--- Lista inventario con ubicacion (estante,pasillo y bodega), ultimo ingreso,ultimo despacho y alerta de stock.
+/*
+    Consulta los productos activos junto con su bodega, pasillo, estante,
+    cantidad actual, stock critico, ultimo ingreso, ultimo despacho y estado de
+    stock. El estado de stock se calcula llamando a fn_VerificarAlertaStock.
+    Devuelve el listado general de inventario activo ordenado por nombre del
+    producto.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarInventario$$
 CREATE PROCEDURE sp_ListarInventario()
@@ -613,8 +677,13 @@ END
 $$
 DELIMITER ;
 
-
--- Devuelve el historial cronologico de recepciones y despachos de un producto.
+/*
+    Une las recepciones y los despachos procesados de un producto dentro del rango
+    de fechas indicado. Cada registro muestra la fecha, tipo de movimiento,
+    cliente, codigo del producto, nombre del producto, cantidad y usuario
+    asociado.
+    Devuelve los movimientos del producto ordenados desde el mas reciente.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarMovimientosProducto$$
 CREATE PROCEDURE sp_ListarMovimientosProducto(
@@ -662,7 +731,12 @@ END
 $$
 DELIMITER ;
 
--- Lista los registros de auditoria de un producto.
+/*
+    Consulta los cambios de inventario registrados para un producto dentro del
+    rango de fechas indicado. Muestra cantidad anterior, cantidad nueva, tipo de
+    movimiento, fecha y usuario responsable.
+    Devuelve el historial de auditoria del producto.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarAuditoriaProducto$$
 CREATE PROCEDURE sp_ListarAuditoriaProducto(
@@ -691,7 +765,11 @@ END
 $$
 DELIMITER ;
 
--- Lista los clientes.
+/*
+    Consulta los datos principales de todos los clientes, incluyendo su rol,
+    telefono, correo, direccion y estado activo. Ordena los resultados por nombre.
+    Devuelve el listado de clientes.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ListarClientes$$
 CREATE PROCEDURE sp_ListarClientes()
@@ -710,7 +788,12 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+/*
+    Valida que el identificador y el nombre no esten vacios, que el rol sea
+    valido, que el estado sea 0 o 1, y que el cliente exista. Luego actualiza los
+    datos del cliente y normaliza los campos opcionales vacios como NULL.
+    Devuelve el registro actualizado del cliente.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ModificarCliente$$
 CREATE PROCEDURE sp_ModificarCliente(
@@ -776,7 +859,11 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+/*
+    Valida que el nombre no este vacio y que el rol sea permitido. Inserta el
+    cliente como activo y convierte los campos opcionales vacios en NULL.
+    Devuelve el registro del cliente creado.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_CrearCliente$$
 CREATE PROCEDURE sp_CrearCliente(
@@ -830,7 +917,12 @@ $$
 DELIMITER ;
 
 
--- Elimina un cliente solo si no tiene movimientos asociados.
+/*
+    Obtiene el identificador interno del cliente y valida que exista. Luego
+    verifica que no tenga recepciones ni despachos asociados. Si no existen
+    dependencias, elimina el registro de CLIENTE.
+    Devuelve un mensaje de eliminacion correcta.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_EliminarCliente$$
 CREATE PROCEDURE sp_EliminarCliente(
@@ -876,7 +968,13 @@ END $$
 DELIMITER ;
 
 
--- Modifica nombre, stock critico y ubicacion del producto. No modifica CantidadInventario.
+/*
+    Valida que el producto y la ubicacion existan. Tambien valida que el nombre no
+    este vacio y que el stock critico sea mayor o igual a cero. Actualiza el
+    nombre, stock critico y ubicacion del producto, sin modificar la cantidad de
+    inventario.
+    Devuelve el producto actualizado junto con su ubicacion.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ModificarProducto$$
 CREATE PROCEDURE sp_ModificarProducto(
@@ -951,8 +1049,13 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Crea producto y, si es necesario, crea la ubicacion: BODEGA -> PASILLO -> ESTANTE -> UBICACION.
--- La cantidad de inventario inicia en 0.
+/*
+    Valida los datos obligatorios y verifica que no exista otro producto con el
+    mismo codigo. Crea o reutiliza la bodega, pasillo, estante y ubicacion
+    mediante operaciones con ON DUPLICATE KEY UPDATE. Luego inserta el producto
+    con cantidad inicial de inventario en cero y estado activo.
+    Devuelve el producto creado junto con su ubicacion.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_IngresarProducto$$
 CREATE PROCEDURE sp_IngresarProducto(
@@ -1104,7 +1207,12 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Elimina un producto solo si no tiene movimientos asociados.
+/*
+    Obtiene el identificador interno del producto y valida que exista. Luego
+    verifica que no tenga recepciones, despachos, registros en carrito ni
+    auditorias asociadas. Si no hay dependencias, elimina el producto.
+    Devuelve un mensaje de eliminacion correcta.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_EliminarProducto$$
 CREATE PROCEDURE sp_EliminarProducto(
@@ -1167,6 +1275,11 @@ BEGIN
 END $$
 DELIMITER ;
 
+/*
+    Consulta el producto indicado y lo relaciona con su ubicacion fisica,
+    incluyendo bodega, pasillo y estante.
+    Devuelve los datos del producto y su ubicacion.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS sp_ObtenerProductoPorId$$
 
@@ -1199,6 +1312,11 @@ DELIMITER ;
 
 #ROLES Y USUARIOS
 
+/*
+    Consulta los identificadores y nombres de los roles registrados, ordenados por
+    nombre.
+    Devuelve el listado de roles de usuario.
+*/
 DELIMITER $$ 
 DROP PROCEDURE IF EXISTS sp_ListarRolesUsuario$$
 CREATE PROCEDURE sp_ListarRolesUsuario()
@@ -1213,6 +1331,12 @@ END
 $$
 DELIMITER ;
 
+/*
+    Consulta los datos principales de los usuarios, incluyendo nombre de usuario,
+    nombre, apellidos, correo, contrasena cifrada y estado activo. Ordena los
+    resultados por nombre de usuario.
+    Devuelve el listado de usuarios.
+*/
 DELIMITER $$ 
 DROP PROCEDURE IF EXISTS sp_ListarUsuarios$$
 CREATE PROCEDURE sp_ListarUsuarios()
@@ -1232,6 +1356,11 @@ END
 $$
 DELIMITER ;
 
+/*
+    Consulta la tabla USUARIO filtrando por UsuarioResourceId y limita el
+    resultado a un solo registro.
+    Devuelve los datos del usuario encontrado.
+*/
 DELIMITER $$ 
 DROP PROCEDURE IF EXISTS sp_ObtenerUsuarioPorResourceId$$
 CREATE PROCEDURE sp_ObtenerUsuarioPorResourceId(
@@ -1254,8 +1383,13 @@ END
 $$
 DELIMITER ;
 
+/*
+    Relaciona el usuario con la tabla intermedia USUARIO_ROL y con ROL_USUARIO
+    para obtener los roles asignados al usuario indicado. Ordena los roles por
+    nombre.
+    Devuelve los roles asociados al usuario.
+*/
 DELIMITER $$
-
 DROP PROCEDURE IF EXISTS sp_ListarRolesPorUsuarioResourceId$$
 
 CREATE PROCEDURE sp_ListarRolesPorUsuarioResourceId(
@@ -1277,6 +1411,11 @@ END$$
 
 DELIMITER ;
 
+/*
+    Consulta la tabla USUARIO filtrando por NombreUsuario y validando que el campo
+    Activo sea igual a 1. Limita el resultado a un solo registro.
+    Devuelve los datos del usuario activo encontrado.
+*/
 DELIMITER $$
 DROP PROCEDURE IF EXISTS  sp_ObtenerUsuarioPorNombreUsuario$$
 
@@ -1300,9 +1439,13 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para traer el carrito de los despachos
--- Este se ayuda cuando se quiere procesar un despacho pendiente y este puede estar lleno o vacio
--- Entonces permite ayudar a modificar un despacho
+/*
+    Valida que el identificador del despacho no sea nulo y que el despacho exista
+    con estado 'PENDIENTE'. Luego consulta los productos activos agregados al
+    carrito del despacho, mostrando su identificador, codigo, nombre y cantidad
+    solicitada.
+    Devuelve el contenido actual del carrito del despacho
+*/
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS sp_VerCarritoDespacho$$
