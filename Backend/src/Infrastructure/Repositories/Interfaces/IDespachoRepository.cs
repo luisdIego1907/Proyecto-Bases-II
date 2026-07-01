@@ -31,4 +31,8 @@ public interface IDespachoRepository
     Task<IReadOnlyList<DetalleDespachoResult>> VerDetalleAsync(
         int despachoId,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<CarritoDespachoResult>> VerCarritoAsync(
+        int despachoId,
+        CancellationToken cancellationToken = default);
 }

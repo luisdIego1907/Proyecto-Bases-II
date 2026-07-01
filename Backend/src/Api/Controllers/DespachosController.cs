@@ -13,7 +13,7 @@ namespace Api.Controllers;
 [Route("api/despachos")]
 public class DespachosController : ControllerBase
 {
-     private readonly IDespachoFacade _despachoFacade;
+    private readonly IDespachoFacade _despachoFacade;
 
     public DespachosController(IDespachoFacade despachoFacade)
     {
@@ -99,21 +99,21 @@ public class DespachosController : ControllerBase
         }
     }
 
-     [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
+    [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
     [HttpGet("ultima-semana")]
     public async Task<ActionResult<IReadOnlyList<DespachoResumenResponseModel>>> ListarUltimaSemana(
-        CancellationToken cancellationToken)
+       CancellationToken cancellationToken)
     {
         var despachos = await _despachoFacade.ListarUltimaSemanaAsync(cancellationToken);
 
         return Ok(despachos.Select(DespachoApiMapper.ToModel).ToList());
     }
 
-     [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
+    [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
     [HttpPost("por-fecha")]
     public async Task<ActionResult<IReadOnlyList<DespachoResumenResponseModel>>> ListarPorFecha(
-        [FromBody] RangoFechaRequestModel request,
-        CancellationToken cancellationToken)
+       [FromBody] RangoFechaRequestModel request,
+       CancellationToken cancellationToken)
     {
         try
         {
@@ -144,6 +144,26 @@ public class DespachosController : ControllerBase
                 cancellationToken);
 
             return Ok(detalles.Select(DespachoApiMapper.ToModel).ToList());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensaje = ex.InnerException?.Message ?? ex.Message });
+        }
+    }
+
+    [Authorize(Policy = AuthorizationPolicies.CanReadDispatches)]
+    [HttpGet("{despachoId:int}/carrito")]
+    public async Task<ActionResult<IReadOnlyList<CarritoDespachoResponseModel>>> VerCarrito(
+    int despachoId,
+    CancellationToken cancellationToken)
+    {
+        try
+        {
+            var carrito = await _despachoFacade.VerCarritoAsync(
+                despachoId,
+                cancellationToken);
+
+            return Ok(carrito.Select(DespachoApiMapper.ToModel).ToList());
         }
         catch (Exception ex)
         {

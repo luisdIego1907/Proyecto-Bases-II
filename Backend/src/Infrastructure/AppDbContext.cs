@@ -1,6 +1,6 @@
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Infrastructure.Repositories.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
@@ -67,6 +67,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ProcesarDespachoResult>().HasNoKey().ToView(null);
         modelBuilder.Entity<DespachoResumenResult>().HasNoKey().ToView(null);
         modelBuilder.Entity<DetalleDespachoResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<CarritoDespachoResult>().HasNoKey().ToView(null);
 
         modelBuilder.Entity<AuditoriaProductoResult>().HasNoKey().ToView(null);
 

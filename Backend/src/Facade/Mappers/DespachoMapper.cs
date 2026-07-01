@@ -5,7 +5,7 @@ namespace Facade.Mappers;
 
 public static class DespachoMapper
 {
-       public static CrearDespachoResponseDto ToResponseDto(CrearDespachoResult despacho)
+    public static CrearDespachoResponseDto ToResponseDto(CrearDespachoResult despacho)
     {
         return new CrearDespachoResponseDto
         {
@@ -60,5 +60,25 @@ public static class DespachoMapper
             Producto = detalle.Producto,
             CantidadDespachada = detalle.CantidadDespachada
         };
+    }
+
+    public static CarritoDespachoResponseDto ToResponseDto(CarritoDespachoResult carrito)
+    {
+        return new CarritoDespachoResponseDto
+        {
+            CarritoId = carrito.CarritoId,
+            ProductoId = carrito.ProductoId,
+            Codigo = carrito.Codigo,
+            Nombre = carrito.Nombre,
+            CantidadSolicitada = carrito.CantidadSolicitada
+        };
+    }
+
+    public static IReadOnlyList<CarritoDespachoResponseDto> ToResponseDto(
+    IEnumerable<CarritoDespachoResult> carrito)
+    {
+        return carrito
+            .Select(ToResponseDto)
+            .ToList();
     }
 }
