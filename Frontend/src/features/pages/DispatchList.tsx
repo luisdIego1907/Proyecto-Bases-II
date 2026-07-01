@@ -13,10 +13,10 @@ import {
   getDispatches,
   getDispatchDetails,
   filterDispatches,
-  processDispatch,
+ 
 } from "../../services/DispatchService";
 import FeedbackModal from "../../shared/FeedbackModal";
-import { getUserId } from "../../auth/sessionAuth";
+
 import BackButton from "../../shared/BackButton";
 
 export default function DispatchList() {
