@@ -68,31 +68,9 @@ export default function DispatchList() {
     setDispatchDetails([]);
   }
 
-  //Procesar despacho
-  async function handleProcessDispatch(dispatchId: number) {
-    try {
-      const userId = getUserId();
-
-      if (userId === null) {
-        showMessage("error", "Sesión inválida");
-        return;
-      }
-      const response = await processDispatch({
-        despachoId: dispatchId,
-        usuarioId: userId,
-      });
-
-      showMessage("success", response.mensaje);
-
-      const data = await getDispatches();
-      setDispatches(data);
-    } catch (error) {
-      console.error(error);
-
-      if (error instanceof Error) {
-        showMessage("error", error.message);
-      }
-    }
+  //Editar un despacho pendiente
+  function handleEditDispatch(dispatchId: number) {
+    navigate(`/dispatch/edit/${dispatchId}`);
   }
 
   // Filtro de fechas
@@ -231,7 +209,7 @@ export default function DispatchList() {
         <DispatchTable
           dispatches={dispatches}
           onViewDetail={handleViewDetail}
-          onProcess={handleProcessDispatch}
+          onEdit={handleEditDispatch}
         />
       )}
 

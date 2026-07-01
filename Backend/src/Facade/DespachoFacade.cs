@@ -95,4 +95,17 @@ public class DespachoFacade : IDespachoFacade
             .Select(DespachoMapper.ToResponseDto)
             .ToList();
     }
+
+    public async Task<IReadOnlyList<CarritoDespachoResponseDto>> VerCarritoAsync(
+     int despachoId,
+     CancellationToken cancellationToken = default)
+    {
+        var carrito = await _despachoService.VerCarritoAsync(
+            despachoId,
+            cancellationToken);
+
+        return carrito
+            .Select(DespachoMapper.ToResponseDto)
+            .ToList();
+    }
 }

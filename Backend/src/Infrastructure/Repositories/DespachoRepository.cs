@@ -105,4 +105,14 @@ public class DespachoRepository : IDespachoRepository
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<CarritoDespachoResult>> VerCarritoAsync(int despachoId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<CarritoDespachoResult>()
+       .FromSqlInterpolated($"""
+            CALL sp_VerCarritoDespacho({despachoId})
+            """)
+       .AsNoTracking()
+       .ToListAsync(cancellationToken);
+    }
 }

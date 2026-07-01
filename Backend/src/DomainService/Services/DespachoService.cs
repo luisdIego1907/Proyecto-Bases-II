@@ -6,7 +6,7 @@ namespace DomainService.Services;
 
 public class DespachoService : IDespachoService
 {
-     private readonly IDespachoRepository _despachoRepository;
+    private readonly IDespachoRepository _despachoRepository;
 
     public DespachoService(IDespachoRepository despachoRepository)
     {
@@ -131,6 +131,22 @@ public class DespachoService : IDespachoService
         }
 
         return await _despachoRepository.VerDetalleAsync(
+            despachoId,
+            cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<CarritoDespachoResult>> VerCarritoAsync(
+    int despachoId,
+    CancellationToken cancellationToken = default)
+    {
+        if (despachoId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(despachoId),
+                "El identificador del despacho debe ser mayor que cero.");
+        }
+
+        return await _despachoRepository.VerCarritoAsync(
             despachoId,
             cancellationToken);
     }
