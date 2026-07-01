@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/AuthService";
 import type { LoginRequest } from "../../data/auth";
+import { saveSession } from "../../auth/sessionAuth"; // AGREGAR
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -28,7 +29,9 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      await loginUser(form);
+      const response = await loginUser(form);
+
+      saveSession(response.bearerToken);
 
       navigate("/");
     } catch (err) {

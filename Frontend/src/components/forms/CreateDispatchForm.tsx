@@ -116,7 +116,7 @@ export default function CreateDispatch() {
       setProducts(inventory.filter((p) => p.cantidadInventario > 0));
     } catch (error) {
       console.log(error);
-      alert("No se pudieron cargar los datos");
+      showMessage("error", "No se pudieron cargar los datos");
     }
   }
 
@@ -125,8 +125,14 @@ export default function CreateDispatch() {
    */
   useEffect(() => {
     async function load() {
-      await loadInitialData();
-      setLoading(false);
+      try {
+        await loadInitialData();
+      } catch (error) {
+        console.log(error);
+        showMessage("error", "No se pudieron cargar los datos");
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();
