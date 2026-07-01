@@ -5,7 +5,7 @@ namespace Api.Mappers;
 
 public static class DespachoApiMapper
 {
-     public static CrearDespachoRequestDto ToDto(CrearDespachoRequestModel model)
+    public static CrearDespachoRequestDto ToDto(CrearDespachoRequestModel model)
     {
         return new CrearDespachoRequestDto
         {
@@ -88,6 +88,19 @@ public static class DespachoApiMapper
             Codigo = dto.Codigo,
             Producto = dto.Producto,
             CantidadDespachada = dto.CantidadDespachada
+        };
+    }
+
+    public static CarritoDespachoResponseModel ToModel(
+    CarritoDespachoResponseDto dto)
+    {
+        return new CarritoDespachoResponseModel
+        {
+            CarritoId = dto.CarritoId,
+            ProductoId = dto.ProductoId,
+            Codigo = dto.Codigo,
+            Nombre = dto.Nombre,
+            CantidadSolicitada = dto.CantidadSolicitada
         };
     }
 }

@@ -2,6 +2,7 @@ import { config } from "../config";
 import type {
   AddCartItemRequest,
   AddCartItemResponse,
+  CarritoDespachoResponse,
 } from "../data/dispatch/CartItem";
 import type {
   CreateDispatchRequest,
@@ -69,4 +70,13 @@ export async function processDispatch(
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+//Ver carrito de despacho
+export async function getDispatchCart(
+  dispatchId: number,
+): Promise<CarritoDespachoResponse[]> {
+  return apiClient<CarritoDespachoResponse[]>(
+    `${URL_API}/${dispatchId}/carrito`,
+  );
 }

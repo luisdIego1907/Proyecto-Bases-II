@@ -18,6 +18,7 @@ import CreateDispatch from "./components/forms/CreateDispatchForm";
 import ReceptionForm from "./components/forms/ReceptionForm";
 import AuditPage from "./features/pages/AuditPage";
 import NotFoundPage from "./shared/NotFoundPage";
+import DispatchEditForm from "./components/forms/DispatchEditForm";
 
 function App() {
   const [auth, setAuth] = useState(isAuthenticated());
@@ -37,7 +38,6 @@ function App() {
 
         <main className="flex-1">
           <Routes>
-
             <Route path="/login" element={<LoginForm />} />
 
             <Route
@@ -135,6 +135,15 @@ function App() {
               element={
                 <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
                   <CreateDispatch />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/dispatch/edit/:id"
+              element={
+                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                  <DispatchEditForm />
                 </ProtectedRoute>
               }
             />

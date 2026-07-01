@@ -4,13 +4,13 @@ import DispatchStatusBadge from "../forms/DispatchStatusBadge";
 interface Props {
   dispatches: DispatchSummary[];
   onViewDetail: (id: number) => void;
-  onProcess: (id: number) => void;
+  onEdit: (id: number) => void;
 }
 
 export default function DispatchTable({
   dispatches,
   onViewDetail,
-  onProcess,
+  onEdit,
 }: Props) {
   return (
     <div className="max-h-[550px] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200">
@@ -72,10 +72,10 @@ export default function DispatchTable({
 
                   {dispatch.estado === "PENDIENTE" && (
                     <button
-                      onClick={() => onProcess(dispatch.despachoId)}
-                      className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-amber-600"
+                      onClick={() => onEdit(dispatch.despachoId)}
+                      className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white"
                     >
-                      Procesar
+                      Modificar
                     </button>
                   )}
                 </div>
