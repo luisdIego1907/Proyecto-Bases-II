@@ -16,3 +16,11 @@ export interface AddCartItemResponse {
   productoId: number;
   cantidadAgregada: number;
 }
+
+export interface CarritoDespachoResponse {
+  carritoId: number;
+  productoId: number;
+  codigo: string;
+  nombre: string;
+  cantidadSolicitada: number;
+}
