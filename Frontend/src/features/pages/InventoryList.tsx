@@ -4,6 +4,7 @@ import type { InventarioData } from "../../data/Stock";
 
 import InventoryTable from "../../components/Tables/InventoryTable";
 import { getInventory } from "../../services/ProductService";
+import BackButton from "../../shared/BackButton";
 
 export default function InventoryList() {
   // Obtener lista inventario
@@ -52,6 +53,8 @@ export default function InventoryList() {
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="mb-8">
+        <BackButton />
+        
         <h1 className="text-3xl font-bold text-slate-800">
           Monitoreo de Inventario
         </h1>

@@ -15,6 +15,7 @@ import AuditFilter from "../../components/audit/AuditFilter";
 import MovementTable from "../../components/Tables/MovementTable";
 import AuditTable from "../../components/Tables/AuditTable";
 import { getInventory } from "../../services/ProductService";
+import BackButton from "../../shared/BackButton";
 
 export default function AuditPage() {
   // Fecha hoy
@@ -110,6 +111,8 @@ export default function AuditPage() {
     <div className="container mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-5">
+        <BackButton />
+        
         <h1 className="text-2xl font-bold text-slate-800">
           Auditoría y Trazabilidad
         </h1>

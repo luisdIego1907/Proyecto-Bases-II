@@ -61,6 +61,7 @@ export default function ReceptionList({
   return (
     <div>
       <div className="mb-6">
+        
         <h3 className="text-2xl font-bold text-slate-800">
           Historial de Recepciones
         </h3>

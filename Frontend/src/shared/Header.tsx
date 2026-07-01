@@ -16,10 +16,11 @@ import {
 
 import {
   clearSession,
-  hasRole,
   isAuthenticated,
   getRoles,
 } from "../auth/sessionAuth";
+
+import { usePermissions } from "../hook/usePermissions";
 
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -64,6 +65,8 @@ export default function Header() {
 
   const getInitials = () =>
     roleLabel.charAt(0).toUpperCase();
+
+  const permission = usePermissions();
 
   if (!auth) return null;
 
@@ -110,8 +113,8 @@ export default function Header() {
                 setDropdownOpen(!dropdownOpen)
               }
               className={`flex items-center gap-3 px-3 py-2 transition-all duration-200 ${dropdownOpen
-                  ? "rounded-t-2xl bg-white shadow-lg"
-                  : "rounded-2xl hover:bg-slate-50"
+                ? "rounded-t-2xl bg-white shadow-lg"
+                : "rounded-2xl hover:bg-slate-50"
                 }`}
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
@@ -131,8 +134,8 @@ export default function Header() {
               <ChevronDown
                 size={18}
                 className={`text-slate-400 transition-transform duration-200 ${dropdownOpen
-                    ? "rotate-180"
-                    : ""
+                  ? "rotate-180"
+                  : ""
                   }`}
               />
             </button>
@@ -170,8 +173,8 @@ export default function Header() {
 
       <aside
         className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 ${sidebarOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
+          ? "translate-x-0"
+          : "-translate-x-full"
           }`}
       >
         <div className="flex h-20 items-center justify-between border-b border-slate-200 px-6">
@@ -266,12 +269,10 @@ export default function Header() {
             Despachos
           </Link>
 
-          {hasRole(["ADMIN", "SUPERVISOR"]) && (
+          {permission.readAudit && (
             <Link
               to="/audit"
-              onClick={() =>
-                setSidebarOpen(false)
-              }
+              onClick={() => setSidebarOpen(false)}
               className="group flex items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
             >
               <span className="text-slate-400 transition-colors group-hover:text-blue-600">

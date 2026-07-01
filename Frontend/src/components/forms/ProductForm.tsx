@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Product } from "../../data/product";
 
 import {
+  
   getProductById,
   createProduct,
   updateProduct,
@@ -13,6 +14,9 @@ import {
   validateProductForm,
   type ProductFormErrors,
 } from "./validations/ProductValidation";
+
+import FeedbackModal from "../../shared/FeedbackModal";
+import BackButton from "../../shared/BackButton";
 
 type ProductFormData = {
   codigo: string;
@@ -29,6 +33,7 @@ type ProductFormData = {
 
 export default function ProductForm() {
   const { id } = useParams();
+  console.log("ID recibido:", id);
   const navigate = useNavigate();
 
   const isEdit = Boolean(id);
@@ -53,6 +58,23 @@ export default function ProductForm() {
 
   const [product, setProduct] = useState<Product | null>(null);
 
+  const [modal, setModal] = useState({
+    open: false,
+    type: "success" as "success" | "error" | "warning",
+    message: "",
+  });
+
+  function showMessage(
+    type: "success" | "error" | "warning",
+    message: string
+  ) {
+    setModal({
+      open: true,
+      type,
+      message,
+    });
+  }
+
   useEffect(() => {
     async function load() {
       if (!id) {
@@ -61,28 +83,27 @@ export default function ProductForm() {
       }
 
       try {
-        const found = await getProductById(Number(id));
+  const found = await getProductById(Number(id));
 
-        setProduct(found);
+  setProduct(found);
 
-        setForm({
-          codigo: found.codigo,
-          nombre: found.nombre,
-          detalle: found.detalle ?? "",
-          stockCritico: found.stockCritico,
-          cantidadInventario: found.cantidadInventario,
-          activo: found.activo,
-
-          bodega: found.bodega ?? "",
-          pasillo: found.pasillo ?? "",
-          estante: found.estante ?? "",
-        });
-      } catch (error) {
-        console.error(error);
-        navigate("/products");
-      } finally {
-        setLoading(false);
-      }
+  setForm({
+    codigo: found.codigo,
+    nombre: found.nombre,
+    detalle: found.detalle ?? "",
+    stockCritico: found.stockCritico,
+    cantidadInventario: found.cantidadInventario,
+    activo: found.activo,
+    bodega: found.bodega ?? "",
+    pasillo: found.pasillo ?? "",
+    estante: found.estante ?? "",
+  });
+} catch (error) {
+  console.error(error);
+  navigate("/products");
+} finally {
+  setLoading(false);
+}
     }
 
     void load();
@@ -135,7 +156,11 @@ export default function ProductForm() {
         await updateProduct({
           ...product,
           nombre: form.nombre.trim(),
+          detalle: form.detalle.trim(),
           stockCritico: form.stockCritico,
+
+          productoResourceId: product.productoResourceId,
+
           bodega: form.bodega.trim(),
           pasillo: form.pasillo.trim(),
           estante: form.estante.trim(),
@@ -155,7 +180,10 @@ export default function ProductForm() {
       navigate("/products");
     } catch (error) {
       console.error(error);
-      alert("Error al guardar el producto.");
+      showMessage(
+        "error",
+        "Error al guardar el producto"
+      );
     } finally {
       setSaving(false);
     }
@@ -171,7 +199,13 @@ export default function ProductForm() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-6">
-      <div className="max-w-4xl mx-auto">
+     
+        <div className="mx-auto w-full max-w-5xl">
+        
+                <div className="mb-5">
+                  <BackButton />
+                </div>
+        
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden"
@@ -371,6 +405,17 @@ export default function ProductForm() {
           </div>
         </form>
       </div>
+      <FeedbackModal
+        isOpen={modal.open}
+        type={modal.type}
+        message={modal.message}
+        onClose={() =>
+          setModal((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
+      />
     </div>
   );
 }

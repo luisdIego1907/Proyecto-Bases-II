@@ -13,6 +13,10 @@ import {
     type ReceptionFormErrors,
 } from "./validations/ReceptionValidation";
 
+import { getUserId } from "../../auth/sessionAuth";
+
+import FeedbackModal from "../../shared/FeedbackModal";
+
 export default function ReceptionForm() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -29,6 +33,22 @@ export default function ReceptionForm() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    const [modal, setModal] = useState({
+        open: false,
+        type: "success" as "success" | "error" | "warning",
+        message: "",
+    });
+
+    function showMessage(
+        type: "success" | "error" | "warning",
+        message: string
+    ) {
+        setModal({
+            open: true,
+            type,
+            message,
+        });
+    }
     useEffect(() => {
         async function loadData() {
             try {
@@ -58,6 +78,8 @@ export default function ReceptionForm() {
         void loadData();
     }, [id, navigate]);
 
+
+
     const handleSubmit = async (
         e: React.FormEvent
     ) => {
@@ -76,6 +98,14 @@ export default function ReceptionForm() {
             return;
         }
 
+        const userId = getUserId();
+
+        if (!userId) {
+            showMessage("error", "No se pudo identificar el usuario");
+            return;
+
+        }
+
         try {
             setSaving(true);
 
@@ -84,15 +114,25 @@ export default function ReceptionForm() {
                 clienteId: Number(clienteId),
                 cantidad,
                 numeroLote: lote.trim(),
-                usuarioId: 1,
+                usuarioId: userId,
             });
 
-            alert("Recepción registrada correctamente");
+            showMessage(
+                "success",
+                "Recepción registrada correctamente"
+            );
+
+            setTimeout(() => {
+                navigate("/products");
+            }, 1500);
 
             navigate("/products");
         } catch (error) {
             console.error(error);
-            alert("Error al registrar la recepción.");
+            showMessage(
+                "error",
+                "Error al registrar la recepción"
+            );
         } finally {
             setSaving(false);
         }
@@ -116,6 +156,7 @@ export default function ReceptionForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100 px-6 py-10">
+
             <form
                 onSubmit={handleSubmit}
                 className="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100"
@@ -258,6 +299,17 @@ export default function ReceptionForm() {
                     </button>
                 </div>
             </form>
+            <FeedbackModal
+                isOpen={modal.open}
+                type={modal.type}
+                message={modal.message}
+                onClose={() =>
+                    setModal((prev) => ({
+                        ...prev,
+                        open: false,
+                    }))
+                }
+            />
         </div>
     );
 }

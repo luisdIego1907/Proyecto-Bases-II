@@ -17,6 +17,7 @@ import {
 } from "../../services/DispatchService";
 import FeedbackModal from "../../shared/FeedbackModal";
 import { getUserId } from "../../auth/sessionAuth";
+import BackButton from "../../shared/BackButton";
 
 export default function DispatchList() {
   // Lista principal de despachos
@@ -186,6 +187,8 @@ export default function DispatchList() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
+          <BackButton />
+          
           <h1 className="text-3xl font-bold text-slate-800">
             Gestión de Despachos
           </h1>

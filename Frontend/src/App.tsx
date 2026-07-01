@@ -8,15 +8,22 @@ import Header from "./shared/Header";
 
 import Home from "./features/home/Home";
 import LoginForm from "./features/login/Login";
+
 import ProductList from "./features/pages/ProductList";
+import ProductProfile from "./features/pages/ProductProfile";
+import InventoryList from "./features/pages/InventoryList";
+
+import ClientList from "./features/pages/ClientList";
+import ClientProfile from "./features/pages/ClientProfile";
+
+import DispatchList from "./features/pages/DispatchList";
+import AuditPage from "./features/pages/AuditPage";
+
 import ClientForm from "./components/forms/ClientForm";
 import ProductForm from "./components/forms/ProductForm";
-import InventoryList from "./features/pages/InventoryList";
-import ClientList from "./features/pages/ClientList";
-import DispatchList from "./features/pages/DispatchList";
 import CreateDispatch from "./components/forms/CreateDispatchForm";
 import ReceptionForm from "./components/forms/ReceptionForm";
-import AuditPage from "./features/pages/AuditPage";
+
 import NotFoundPage from "./shared/NotFoundPage";
 
 function App() {
@@ -32,7 +39,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         {auth && <Header />}
 
         <main className="flex-1">
@@ -43,16 +50,22 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <Home />
                 </ProtectedRoute>
               }
             />
 
+            {/* ================= CLIENTES ================= */}
+
             <Route
               path="/clients"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <ClientList />
                 </ProtectedRoute>
               }
@@ -61,8 +74,21 @@ function App() {
             <Route
               path="/clients/register"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR"]}
+                >
                   <ClientForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/clients/profile/:id"
+              element={
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
+                  <ClientProfile />
                 </ProtectedRoute>
               }
             />
@@ -70,16 +96,22 @@ function App() {
             <Route
               path="/clients/:id"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR"]}
+                >
                   <ClientForm />
                 </ProtectedRoute>
               }
             />
 
+            {/* ================= PRODUCTOS ================= */}
+
             <Route
               path="/products"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <ProductList />
                 </ProtectedRoute>
               }
@@ -88,8 +120,21 @@ function App() {
             <Route
               path="/products/register"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR"]}
+                >
                   <ProductForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/products/profile/:id"
+              element={
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
+                  <ProductProfile />
                 </ProtectedRoute>
               }
             />
@@ -97,7 +142,9 @@ function App() {
             <Route
               path="/products/:id"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR"]}
+                >
                   <ProductForm />
                 </ProtectedRoute>
               }
@@ -106,25 +153,39 @@ function App() {
             <Route
               path="/products/:id/reception"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={[
+                    "ADMIN",
+                    "SUPERVISOR",
+                    "OPERARIO",
+                  ]}
+                >
                   <ReceptionForm />
                 </ProtectedRoute>
               }
             />
 
+            {/* ================= INVENTARIO ================= */}
+
             <Route
               path="/inventory"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <InventoryList />
                 </ProtectedRoute>
               }
             />
 
+            {/* ================= DESPACHOS ================= */}
+
             <Route
               path="/dispatch"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <DispatchList />
                 </ProtectedRoute>
               }
@@ -133,23 +194,34 @@ function App() {
             <Route
               path="/dispatch/create"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR", "OPERARIO"]}
+                >
                   <CreateDispatch />
                 </ProtectedRoute>
               }
             />
 
+            {/* ================= AUDITORÍA ================= */}
+
             <Route
               path="/audit"
               element={
-                <ProtectedRoute roles={["ADMIN", "SUPERVISOR"]}>
+                <ProtectedRoute
+                  roles={["ADMIN", "SUPERVISOR"]}
+                >
                   <AuditPage />
                 </ProtectedRoute>
               }
             />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFoundPage />} />
+            {/* ================= 404 ================= */}
+
+            <Route
+              path="*"
+              element={<NotFoundPage />}
+            />
+
           </Routes>
         </main>
       </div>
