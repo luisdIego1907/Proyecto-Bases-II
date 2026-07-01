@@ -1299,3 +1299,46 @@ BEGIN
     LIMIT 1;
 END $$
 DELIMITER ;
+
+-- Procedimiento para traer el carrito de los despachos
+-- Este se ayuda cuando se quiere procesar un despacho pendiente y este puede estar lleno o vacio
+-- Entonces permite ayudar a modificar un despacho
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_VerCarritoDespacho$$
+CREATE PROCEDURE sp_VerCarritoDespacho(
+    IN p_DespachoId INT
+)
+BEGIN
+    IF p_DespachoId IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El despacho es obligatorio.';
+    END IF;
+
+    -- validar que el despacho exista y esté pendiente
+    IF NOT EXISTS (
+        SELECT 1
+        FROM DESPACHO
+        WHERE DespachoId = p_DespachoId
+          AND Estado = 'PENDIENTE'
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El despacho no existe o no está pendiente.';
+    END IF;
+
+    
+    SELECT
+        DC.CarritoId,
+        DC.ProductoId,
+        P.Codigo,
+        P.Nombre,
+        DC.CantidadSolicitada
+    FROM DESPACHO_CARRITO DC
+    INNER JOIN PRODUCTO P
+        ON P.ProductoId = DC.ProductoId
+    WHERE DC.DespachoId = p_DespachoId
+      AND P.Activo = 1
+    ORDER BY P.Nombre;
+END$$
+
+DELIMITER ;
