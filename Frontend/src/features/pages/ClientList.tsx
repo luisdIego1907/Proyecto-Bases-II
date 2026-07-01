@@ -7,17 +7,22 @@ import { deleteCliente, getClientes } from "../../services/ClientService";
 import { PermissionDenied } from "../../shared/PermissionDenied";
 import DeleteButton from "../../shared/DeleteButton";
 
+import { usePermissions } from "../../hook/usePermissions";
+import BackButton from "../../shared/BackButton";
+
 export default function ClientList() {
   const navigate = useNavigate();
 
-  const [clientList, setClientList] = useState<ClientListItem[]>([]);
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
+  const permission = usePermissions();
 
+  const [clientList, setClientList] = useState<ClientListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [successMessage, setSuccessMessage] = useState("");
   const [deleteError, setDeleteError] = useState("");
+
+  const [selectedClients, setSelectedClients] = useState<string[]>([]);
 
   const [permissionDenied, setPermissionDenied] = useState(false);
 
@@ -110,6 +115,8 @@ export default function ClientList() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
+          <BackButton />
+
           <h1 className="text-3xl font-bold text-slate-800">
             Lista de Clientes
           </h1>
@@ -119,20 +126,23 @@ export default function ClientList() {
         </div>
 
         <div className="flex items-center gap-3">
-          <DeleteButton
-            label="Eliminar clientes"
-            loadingLabel="Eliminando..."
-            disabled={selectedClients.length === 0}
-            confirmMessage={`¿Está seguro de eliminar ${selectedClients.length} cliente(s)?`}
-            onDelete={handleDeleteClients}
-          />
-
-          <Link
-            to="/clients/register"
-            className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-3 rounded-xl font-medium"
-          >
-            Registrar Cliente
-          </Link>
+          {permission.deleteClients && (
+            <DeleteButton
+              label="Eliminar clientes"
+              loadingLabel="Eliminando..."
+              disabled={selectedClients.length === 0}
+              confirmMessage={`¿Está seguro de eliminar ${selectedClients.length} cliente(s)?`}
+              onDelete={handleDeleteClients}
+            />
+          )}
+          {permission.createClients && (
+            <Link
+              to="/clients/register"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-3 rounded-xl font-medium"
+            >
+              Registrar Cliente
+            </Link>
+          )}
         </div>
       </div>
 
@@ -166,7 +176,10 @@ export default function ClientList() {
         <ClientTable
           clients={clientList}
           selectedClients={selectedClients}
+          canDelete={permission.deleteClients}
+          canUpdate={permission.updateClients}
           onSelect={handleSelectClient}
+          onView={(id) => navigate(`/clients/profile/${id}`)}
           onEdit={(id) => navigate(`/clients/${id}`)}
         />
       )}

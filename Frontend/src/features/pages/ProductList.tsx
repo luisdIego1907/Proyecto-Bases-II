@@ -14,6 +14,9 @@ import {
 import DeleteButton from "../../shared/DeleteButton";
 import ReceptionList from "./ReceptionList";
 
+import { usePermissions } from "../../hook/usePermissions";
+import BackButton from "../../shared/BackButton";
+
 export default function ProductList() {
   const navigate = useNavigate();
 
@@ -35,6 +38,8 @@ export default function ProductList() {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [deleteError, setDeleteError] = useState("");
+
+  const permission = usePermissions();
 
   useEffect(() => {
     async function loadProducts() {
@@ -160,6 +165,8 @@ export default function ProductList() {
     <div className="container mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
+          <BackButton />
+
           <h1 className="text-3xl font-bold text-slate-800">
             Gestión de Productos
           </h1>
@@ -171,20 +178,24 @@ export default function ProductList() {
 
         {activeTab === "productos" && (
           <div className="flex items-center gap-3">
-            <DeleteButton
-              label="Eliminar productos"
-              loadingLabel="Eliminando..."
-              disabled={selectedProducts.length === 0}
-              confirmMessage={`¿Eliminar ${selectedProducts.length} producto(s)?`}
-              onDelete={handleDeleteProducts}
-            />
+            {permission.deleteProducts && (
+              <DeleteButton
+                label="Eliminar productos"
+                loadingLabel="Eliminando..."
+                disabled={selectedProducts.length === 0}
+                confirmMessage={`¿Eliminar ${selectedProducts.length} producto(s)?`}
+                onDelete={handleDeleteProducts}
+              />
+            )}
 
-            <button
-              onClick={() => navigate("/products/register")}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl font-medium"
-            >
-              + Nuevo Producto
-            </button>
+            {permission.createProducts && (
+              <button
+                onClick={() => navigate("/products/register")}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl font-medium"
+              >
+                + Nuevo Producto
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -195,33 +206,36 @@ export default function ProductList() {
             type="button"
             onClick={() => setActiveTab("productos")}
             className={`pb-3 text-sm font-semibold transition ${activeTab === "productos"
-                ? "border-b-2 border-emerald-500 text-emerald-600"
-                : "text-slate-500 hover:text-slate-700"
+              ? "border-b-2 border-emerald-500 text-emerald-600"
+              : "text-slate-500 hover:text-slate-700"
               }`}
           >
             Productos
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab("recepciones")}
-            className={`pb-3 text-sm font-semibold transition ${activeTab === "recepciones"
+          {permission.readReception && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("recepciones")}
+              className={`pb-3 text-sm font-semibold transition ${activeTab === "recepciones"
                 ? "border-b-2 border-emerald-500 text-emerald-600"
                 : "text-slate-500 hover:text-slate-700"
-              }`}
-          >
-            Ver recepciones
-          </button>
+                }`}
+            >
+              Ver recepciones
+            </button>
+          )}
         </div>
       </div>
 
       {activeTab === "productos" ? (
         <>
-          {selectedProducts.length > 0 && (
-            <div className="mb-6 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm text-cyan-700">
-              {selectedProducts.length} producto(s) seleccionado(s)
-            </div>
-          )}
+          {permission.deleteProducts &&
+            selectedProducts.length > 0 && (
+              <div className="mb-6 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm text-cyan-700">
+                {selectedProducts.length} producto(s) seleccionado(s)
+              </div>
+            )}
 
           {successMessage && (
             <div className="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
@@ -244,15 +258,23 @@ export default function ProductList() {
               </div>
             </div>
           ) : (
-            <ProductTable
-              products={productList}
-              selectedProducts={selectedProducts}
-              onSelect={handleSelectCheckbox}
-              onEdit={(id) => navigate(`/products/${id}`)}
-              onSelectProduct={(id) =>
-                navigate(`/products/${id}/reception`)
-              }
-            />
+          <ProductTable
+  products={productList}
+  selectedProducts={selectedProducts}
+  onSelect={handleSelectCheckbox}
+
+  onView={(resourceId) =>
+    navigate(`/products/profile/${resourceId}`)
+  }
+
+  onEdit={(productoId) =>
+    navigate(`/products/${productoId}`)
+  }
+
+ onSelectProduct={(productoId) => {
+  navigate(`/products/${productoId}/reception`);
+}}
+/>
           )}
         </>
       ) : (

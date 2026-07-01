@@ -18,6 +18,7 @@ import {
 
 import FeedbackModal from "../../shared/FeedbackModal";
 import { getUserId } from "../../auth/sessionAuth";
+import BackButton from "../../shared/BackButton";
 
 /**
  * CreateDispatch
@@ -313,6 +314,8 @@ export default function CreateDispatch() {
     <div className="container mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-8">
+        <BackButton />
+        
         <h1 className="text-3xl font-bold text-slate-800">Nuevo Despacho</h1>
         <p className="mt-1 text-slate-500">
           Seleccione un cliente y agregue productos al despacho
